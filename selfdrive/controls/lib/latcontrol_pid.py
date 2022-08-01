@@ -1,0 +1,73 @@
+#
+# Copyright (c) 2020-2022 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
+import math
+import cereal.messaging as messaging
+
+from cereal import log
+from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
+from selfdrive.controls.lib.pid import PIDController
+from common.params import Params, put_nonblocking
+
+class LatControlPID(LatControl):
+  def __init__(self, CP, CI):
+    super().__init__(CP, CI)
+    self.pid = PIDController((CP.lateralTuning.pid.kpBP, CP.lateralTuning.pid.kpV),
+                             (CP.lateralTuning.pid.kiBP, CP.lateralTuning.pid.kiV),
+                             k_f=CP.lateralTuning.pid.kf, pos_limit=self.steer_max, neg_limit=-self.steer_max)
+    self.get_steer_feedforward = CI.get_steer_feedforward_function()
+
+    self.sm = messaging.SubMaster(['vagParam'])
+
+  def reset(self):
+    super().reset()
+    self.pid.reset()
+
+  def update(self, active, CS, VM, params, last_actuators, desired_curvature, desired_curvature_rate, llk):
+    pid_log = log.ControlsState.LateralPIDState.new_message()
+    pid_log.steeringAngleDeg = float(CS.steeringAngleDeg)
+    pid_log.steeringRateDeg = float(CS.steeringRateDeg)
+
+    angle_steers_des_no_offset = math.degrees(VM.get_steer_from_curvature(-desired_curvature, CS.vEgo, params.roll))
+    angle_steers_des = angle_steers_des_no_offset + params.angleOffsetDeg
+    error = angle_steers_des - CS.steeringAngleDeg
+
+    pid_log.steeringAngleDesiredDeg = angle_steers_des
+    pid_log.angleError = error
+
+   #Pon Fulltime LKA
+    isVagParamFromCerealEnabled = self.sm['vagParam'].isVagParamFromCerealEnabled
+    if isVagParamFromCerealEnabled:
+      isVagFlkaLogEnabled = self.sm['vagParam'].isVagFlkaLogEnabled
+    else :
+      params = Params()
+      try:
+        isVagFlkaLogEnabled = params.get_bool("IsVagFlkaLogEnabled")
+      except:
+        print("[BOP][latcontrol_pid.py][update()][IsVagFlkaLogEnabled] Get param exception")
+        isVagFlkaLogEnabled = False
+
+    if isVagFlkaLogEnabled:
+      print("[BOP][latcontrol_pid.py][update()][FLKA] CS.cruiseState.available=", CS.cruiseState.available)
+
+    if (CS.vEgo < MIN_STEER_SPEED or not active) and (CS.vEgo < MIN_STEER_SPEED or not CS.cruiseState.available):
+      output_steer = 0.0
+      pid_log.active = False
+      self.pid.reset()
+    else:
+      # offset does not contribute to resistive torque
+      steer_feedforward = self.get_steer_feedforward(angle_steers_des_no_offset, CS.vEgo)
+
+      output_steer = self.pid.update(error, override=CS.steeringPressed,
+                                     feedforward=steer_feedforward, speed=CS.vEgo)
+      pid_log.active = True
+      pid_log.p = self.pid.p
+      pid_log.i = self.pid.i
+      pid_log.f = self.pid.f
+      pid_log.output = output_steer
+      pid_log.saturated = self._check_saturation(self.steer_max - abs(output_steer) < 1e-3, CS)
+
+    return output_steer, angle_steers_des, pid_log
