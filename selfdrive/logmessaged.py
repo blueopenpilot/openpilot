@@ -1,39 +1,42 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import zmq
-from logentries import LogentriesHandler
-from common.services import service_list
-import selfdrive.messaging as messaging
+from typing import NoReturn
 
-def main(gctx):
-  # setup logentries. we forward log messages to it
-  le_token = "bc65354a-b887-4ef4-8525-15dd51230e8c"
-  le_handler = LogentriesHandler(le_token, use_tls=False)
+import cereal.messaging as messaging
+from common.logging_extra import SwagLogFileFormatter
+from selfdrive.swaglog import get_file_handler
 
-  le_level = 20 #logging.INFO
 
-  ctx = zmq.Context()
+def main() -> NoReturn:
+  log_handler = get_file_handler()
+  log_handler.setFormatter(SwagLogFileFormatter(None))
+  log_level = 20  # logging.INFO
+
+  ctx = zmq.Context().instance()
   sock = ctx.socket(zmq.PULL)
   sock.bind("ipc:///tmp/logmessage")
 
   # and we publish them
-  pub_sock = messaging.pub_sock(ctx, service_list['logMessage'].port)
+  log_message_sock = messaging.pub_sock('logMessage')
+  error_log_message_sock = messaging.pub_sock('errorLogMessage')
 
   while True:
-    dat = ''.join(sock.recv_multipart())
-
-    # print "RECV", repr(dat)
-
-    levelnum = ord(dat[0])
-    dat = dat[1:]
-
-    if levelnum >= le_level:
-      # push to logentries
-      le_handler.emit_raw(dat)
+    dat = b''.join(sock.recv_multipart())
+    level = dat[0]
+    record = dat[1:].decode("utf-8")
+    if level >= log_level:
+      log_handler.emit(record)
 
     # then we publish them
     msg = messaging.new_message()
-    msg.logMessage = dat
-    pub_sock.send(msg.to_bytes())
+    msg.logMessage = record
+    log_message_sock.send(msg.to_bytes())
+
+    if level >= 40:  # logging.ERROR
+      msg = messaging.new_message()
+      msg.errorLogMessage = record
+      error_log_message_sock.send(msg.to_bytes())
+
 
 if __name__ == "__main__":
-  main(None)
+  main()
