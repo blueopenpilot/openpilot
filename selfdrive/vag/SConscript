@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2020-2022 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
+Import('env', 'arch', 'common', 'cereal', 'messaging')
+
+base_libs = [common, cereal, messaging, 'capnp', 'zmq', 'kj']
+
+if arch == "aarch64": #C2
+  device_hw_lib = ['hardware']
+
+if arch == "larch64": #C3
+  device_hw_lib = ['i2c']
+
+# build speedcamerad
+env.Program("speedcamera_c++/_speedcamerad", ["speedcamera_c++/speedcamera.cc"], LIBS = base_libs + device_hw_lib)
