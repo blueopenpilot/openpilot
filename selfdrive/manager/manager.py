@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2023 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import datetime
 import os
 import signal
@@ -46,6 +52,69 @@ def manager_init() -> None:
     ("LanguageSetting", "main_en"),
     ("OpenpilotEnabledToggle", "1"),
     ("LongitudinalPersonality", str(log.LongitudinalPersonality.standard)),
+    #Pon Add parameter default value
+    # ===== Setting =====
+    ("IsVagManualSoundVolumeEnable", "0"),
+    ("VagSoundVolume", "10"),
+    ("IsVagManualOsdBacklightEnable", "0"),
+    ("VagOsdBacklight", "10"),
+    ("IsVagInfoBoxEnabled", "1"),
+    ("IsVagBlinkerEnabled", "1"),
+    ("IsVagBrakeLightEnabled", "1"),
+    ("IsVagLeadCarEnabled", "1"),
+    # ===== Feature =====
+    ("IsVagBlindspotEnabled", "1"),
+    ("IsVagBlindspotInfoSoundEnabled", "0"),
+    ("IsVagBlindspotInfoVibratorEnabled", "0"),
+    ("IsVagBlindspotWarningSoundEnabled", "1"),
+    ("IsVagBlindspotWarningVibratorEnabled", "1"),
+    ("IsVagBlindspotVibratorWithFlka", "0"),
+    ("IsVagFulltimeLkaEnabled", "1"),
+    ("IsVagFulltimeLkaEnableWithBlinker", "1"),
+    ("IsVagFulltimeLkaEnableWithBrake", "1"),
+    ("IsVagFulltimeLkaEnableWithAssistant", "1"),
+    ("IsVagLeadCarGoingRemindEnabled", "1"),
+    ("IsVagLeadCarGoingRemindSoundEnabled", "1"),
+    ("IsVagNoLeadCarEnabled", "1"),
+    ("IsVagNoLeadCarWarningSoundEnabled", "1"),
+    ("IsVagVisionPresafeEnabled", "1"),
+    ("IsVagVisionPresafeWarningSoundEnabled", "1"),
+    ("IsVagVisionPresafeWarningInterposeEnabled", "1"),
+    ("IsVagSpeedCameraEnabled", "0"),
+    ("IsVagSpeedLimitSoundEnabled", "0"),
+    ("IsVagSaccEnabled", "0"),
+    ("VagSaccTolerance", "10"),
+    ("IsVagOnlineMapEnabled", "0"),
+    ("IsVagOmaccEnabled", "0"),
+    ("VagOmaccTolerance", "20"),
+    # ===== Test =====
+    ("IsVagDebugOsdTestTextEnabled", "0"),
+    ("IsVagRadarAccTestTextEnabled", "0"),
+    ("IsVagVisionAccTestTextEnabled", "0"),
+    ("IsVagOnlineMapTestTextEnabled", "0"),
+    ("IsVagDebugItem1Enabled", "0"),
+    ("IsVagDebugItem2Enabled", "0"),
+    ("IsVagDebugItem3Enabled", "0"),
+    ("IsVagDebugItem4Enabled", "0"),
+    ("IsVagDebugItem5Enabled", "0"),
+    # ===== Gerenal =====
+    ("IsVagDevelopModeEnabled", "0"),
+    ("IsVagDevelopOnRoadUi", "0"),
+    ("IsVagRunningProcessLogEnabled", "1"),
+    ("IsVagParamFromCerealEnabled", "1"),
+    ("IsVagLeftBlinkerSoundEnabled", "0"),
+    ("IsVagRightBlinkerSoundEnabled", "0"),
+    # ===== OSD =====
+    ("IsVagDebugBlinkerTest", "0"),
+    ("IsVagDebugBlindspotInfoTest", "0"),
+    ("IsVagDebugBlindspotWarningTest", "0"),
+    ("IsVagDebugBrakeLightTest", "0"),
+    ("IsVagDebugLeadCarGoingRemindTest", "0"),
+    ("IsVagDebugNoLeadCarWarningTest", "0"),
+    ("IsVagDebugVisionPresafeTest", "0"),
+    # ===== Log =====
+    ("IsVagSaccSpeedCamTrackEnabled", "0"),
+    ("IsVagSaccVehicleTrackEnabled", "0"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

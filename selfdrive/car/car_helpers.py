@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2023 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import os
 from typing import Dict, List
 
@@ -184,7 +190,8 @@ def get_car(logcan, sendcan, experimental_long_allowed, num_pandas=1):
 
   if candidate is None:
     cloudlog.event("car doesn't match any fingerprints", fingerprints=fingerprints, error=True)
-    candidate = "mock"
+    #Pon Default FPv2 to Kodiaq
+    candidate = "SKODA KODIAQ 1ST GEN"
 
   CarInterface, CarController, CarState = interfaces[candidate]
   CP = CarInterface.get_params(candidate, fingerprints, car_fw, experimental_long_allowed, docs=False)

@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2023 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import math
 import os
 from enum import IntEnum
@@ -437,8 +443,10 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.steerTempUnavailableSilent: {
-    ET.WARNING: Alert(
-      "Steering Temporarily Unavailable",
+    #Pon FLKA  PONTEST
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
+      "Steering Temporarily Unavailable 1",
       "",
       AlertStatus.userPrompt, AlertSize.small,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.prompt, 1.8),
@@ -513,7 +521,9 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.preLaneChangeLeft: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Steer Left to Start Lane Change Once Safe",
       "",
       AlertStatus.normal, AlertSize.small,
@@ -521,7 +531,9 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.preLaneChangeRight: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Steer Right to Start Lane Change Once Safe",
       "",
       AlertStatus.normal, AlertSize.small,
@@ -529,7 +541,9 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.laneChangeBlocked: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Car Detected in Blindspot",
       "",
       AlertStatus.userPrompt, AlertSize.small,
@@ -537,7 +551,9 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.laneChange: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Changing Lanes",
       "",
       AlertStatus.normal, AlertSize.small,
@@ -545,7 +561,9 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.steerSaturated: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Take Control",
       "Turn Exceeds Steering Limit",
       AlertStatus.userPrompt, AlertSize.mid,
@@ -656,8 +674,10 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.steerTempUnavailable: {
-    ET.SOFT_DISABLE: soft_disable_alert("Steering Temporarily Unavailable"),
-    ET.NO_ENTRY: NoEntryAlert("Steering Temporarily Unavailable"),
+    #Pon FLKA  PONTEST
+    ET.PERMANENT: soft_disable_alert("Steering Temporarily Unavailable 2"),
+    ET.SOFT_DISABLE: soft_disable_alert("Steering Temporarily Unavailable 2"),
+    ET.NO_ENTRY: NoEntryAlert("Steering Temporarily Unavailable 2"),
   },
 
   EventName.steerTimeLimit: {
@@ -887,9 +907,9 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   EventName.reverseGear: {
     ET.PERMANENT: Alert(
-      "Reverse\nGear",
+      "Reverse Gear",
       "",
-      AlertStatus.normal, AlertSize.full,
+      AlertStatus.normal, AlertSize.small,
       Priority.LOWEST, VisualAlert.none, AudibleAlert.none, .2, creation_delay=0.5),
     ET.USER_DISABLE: ImmediateDisableAlert("Reverse Gear"),
     ET.NO_ENTRY: NoEntryAlert("Reverse Gear"),

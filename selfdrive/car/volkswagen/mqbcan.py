@@ -1,10 +1,23 @@
-def create_steering_control(packer, bus, apply_steer, lkas_enabled):
+def create_steering_control(packer, bus, apply_steer, lkas_enabled, vibrator_enable):
+  #print("[BOP][volkswagencan.py][create_steering_control()][Blindspot] lkas_enabled=", lkas_enabled)
+  #print("[BOP][volkswagencan.py][create_steering_control()][Blindspot] vibrator_enable=", vibrator_enable)
+  if vibrator_enable == 2:
+    vibratorFreq = 0xF
+    vibratorAmp = 0x3
+  elif vibrator_enable == 1:
+    vibratorFreq = 0x7
+    vibratorAmp = 0x1
+  else:
+    vibratorFreq = 0x3
+    vibratorAmp = 0x0
+
   values = {
-    "HCA_01_Status_HCA": 5 if lkas_enabled else 3,
+    "HCA_01_Status_HCA": 5 if (lkas_enabled or vibrator_enable) else 3,
     "HCA_01_LM_Offset": abs(apply_steer),
     "HCA_01_LM_OffSign": 1 if apply_steer < 0 else 0,
-    "HCA_01_Vib_Freq": 18,
-    "HCA_01_Sendestatus": 1 if lkas_enabled else 0,
+    "HCA_01_Vib_Freq": 18 if lkas_enabled else vibratorFreq,
+    "HCA_01_Sendestatus": 1 if (lkas_enabled or vibrator_enable) else 0,
+    "HCA_01_Vib_Amp": vibratorAmp,
     "EA_ACC_Wunschgeschwindigkeit": 327.36,
   }
   return packer.make_can_msg("HCA_01", bus, values)

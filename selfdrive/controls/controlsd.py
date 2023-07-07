@@ -84,7 +84,7 @@ class Controls:
       if SIMULATION:
         ignore += ['driverCameraState', 'managerState']
       self.sm = messaging.SubMaster(['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
-                                     'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
+                                     'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman', 'vagParam',
                                      'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters', 'testJoystick'] + self.camera_packets,
                                     ignore_alive=ignore, ignore_avg_freq=['radarState', 'testJoystick'])
 
@@ -106,6 +106,8 @@ class Controls:
     self.CP.alternativeExperience = 0
     if not self.disengage_on_accelerator:
       self.CP.alternativeExperience |= ALTERNATIVE_EXPERIENCE.DISABLE_DISENGAGE_ON_GAS
+    #Pon FLKA
+    self.CP.alternativeExperience |= ALTERNATIVE_EXPERIENCE.ALKA
 
     # read params
     self.is_metric = self.params.get_bool("IsMetric")
@@ -586,6 +588,161 @@ class Controls:
                    (not standstill or self.joystick_mode)
     CC.longActive = self.enabled and not self.events.any(ET.OVERRIDE_LONGITUDINAL) and self.CP.openpilotLongitudinalControl
 
+
+
+    #Pon FLKA
+    #TODO: Add check from allowControls from panada
+    isVagParamFromCerealEnabled = self.sm['vagParam'].isVagParamFromCerealEnabled
+
+    # ----- IsVagFulltimeLkaEnabled -----
+    if isVagParamFromCerealEnabled:
+      isVagFulltimeLkaEnabled = self.sm['vagParam'].isVagFulltimeLkaEnabled
+    else:
+      params = Params()
+      try:
+        isVagFulltimeLkaEnabled = params.get_bool("IsVagFulltimeLkaEnabled")
+      except:
+        print("[BOP][controlsd.py][publish_logs()][IsVagFulltimeLkaEnabled] Get param exception")
+        isVagFulltimeLkaEnabled = False
+
+    # ----- IsVagFulltimeLkaEnableWithBlinker -----
+    if isVagParamFromCerealEnabled:
+      isVagFulltimeLkaEnableWithBlinker = self.sm['vagParam'].isVagFulltimeLkaEnableWithBlinker
+    else:
+      params = Params()
+      try:
+        isVagFulltimeLkaEnableWithBlinker = params.get_bool("IsVagFulltimeLkaEnableWithBlinker")
+      except:
+        print("[BOP][controlsd.py][publish_logs()][IsVagFulltimeLkaEnableWithBlinker] Get param exception")
+        isVagFulltimeLkaEnableWithBlinker = False
+
+    # ----- IsVagFulltimeLkaEnableWithBrake -----
+    if isVagParamFromCerealEnabled:
+      isVagFulltimeLkaEnableWithBrake = self.sm['vagParam'].isVagFulltimeLkaEnableWithBrake
+    else:
+      params = Params()
+      try:
+        isVagFulltimeLkaEnableWithBrake = params.get_bool("IsVagFulltimeLkaEnableWithBrake")
+      except:
+        print("[BOP][controlsd.py][publish_logs()][IsVagFulltimeLkaEnableWithBrake] Get param exception")
+        isVagFulltimeLkaEnableWithBrake = False
+
+    # ----- IsVagFulltimeLkaEnableWithAssistant -----
+    if isVagParamFromCerealEnabled:
+      isVagFulltimeLkaEnableWithAssistant = self.sm['vagParam'].isVagFulltimeLkaEnableWithAssistant
+    else:
+      params = Params()
+      try:
+        isVagFulltimeLkaEnableWithAssistant = params.get_bool("IsVagFulltimeLkaEnableWithAssistant")
+      except:
+        print("[BOP][controlsd.py][publish_logs()][IsVagFulltimeLkaEnableWithAssistant] Get param exception")
+        isVagFulltimeLkaEnableWithAssistant = False
+
+    if bool(CS.leftBlinker or CS.rightBlinker):
+      if isVagFulltimeLkaEnableWithBlinker:
+        FulltimeLkaEnableWithBlinker = True
+      else:
+        FulltimeLkaEnableWithBlinker = False
+    else:
+      FulltimeLkaEnableWithBlinker = True
+
+    if CS.brakePressed:
+      if isVagFulltimeLkaEnableWithBrake:
+        FulltimeLkaEnableWithBrake = True
+      else:
+        FulltimeLkaEnableWithBrake = False
+    else:
+      FulltimeLkaEnableWithBrake = True
+
+    #params = Params()
+    #doReboot = params.get_bool("DoReboot")
+    #doShutdown = params.get_bool("DoShutdown")
+    #                      and bool(not doReboot) \
+    #                      and bool(not doShutdown) \
+
+                          #and bool(not CS.steeringPressed) \
+
+
+    CC.availableVagFlka = bool(self.initialized) \
+                          and bool(CS.vagSpeed > 0) \
+                          and bool(CS.cruiseState.available \
+                          and bool(self.sm['liveCalibration'].calStatus == log.LiveCalibrationData.Status.calibrated) \
+                          and bool(isVagFulltimeLkaEnabled \
+                                   and FulltimeLkaEnableWithBlinker \
+                                   and FulltimeLkaEnableWithBrake) \
+                          and bool(CS.gearShifter==car.CarState.GearShifter.drive \
+                                   or CS.gearShifter==car.CarState.GearShifter.sport \
+                                   or CS.gearShifter==car.CarState.GearShifter.manumatic \
+                                   or CS.gearShifter==car.CarState.GearShifter.eco) \
+                          and bool(not CS.steerFaultTemporary \
+                                   and not CS.steerFaultPermanent \
+                                   and not CS.standstill))
+    if(CC.availableVagFlka and isVagFulltimeLkaEnableWithAssistant):
+      CC.latActive = CC.availableVagFlka
+    #print("[BOP][controlsd.py][state_control()][FLKA] CC.availableVagFlka=", CC.availableVagFlka)
+    #print("[BOP][controlsd.py][state_control()][FLKA] CC.latActive=", CC.latActive)
+
+    # ----- IsVagBlindspotEnabled -----
+    isVagParamFromCerealEnabled = self.sm['vagParam'].isVagParamFromCerealEnabled
+    if isVagParamFromCerealEnabled:
+      isVagBlindspotEnabled = self.sm['vagParam'].isVagBlindspotEnabled
+    else :
+      params = Params()
+      try:
+        isVagBlindspotEnabled = params.get_bool("IsVagBlindspotEnabled")
+      except:
+        print("[BOP][controlsd.py][publish_logs()][IsVagBlindspotEnabled] Get param exception")
+        isVagBlindspotEnabled = False
+
+    # ----- IsVagBlindspotInfoVibratorEnabled -----
+    if isVagParamFromCerealEnabled:
+      isVagBlindspotInfoVibratorEnabled = self.sm['vagParam'].isVagBlindspotInfoVibratorEnabled
+    else :
+      params = Params()
+      try:
+        isVagBlindspotInfoVibratorEnabled = params.get_bool("IsVagBlindspotInfoVibratorEnabled")
+      except:
+        print("[BOP][controlsd.py][publish_logs()][IsVagBlindspotInfoVibratorEnabled] Get param exception")
+        isVagBlindspotInfoVibratorEnabled = False
+
+    # ----- IsVagBlindspotWarningVibratorEnabled -----
+    if isVagParamFromCerealEnabled:
+      isVagBlindspotWarningVibratorEnabled = self.sm['vagParam'].isVagBlindspotWarningVibratorEnabled
+    else :
+      params = Params()
+      try:
+        isVagBlindspotWarningVibratorEnabled = params.get_bool("IsVagBlindspotWarningVibratorEnabled")
+      except:
+        print("[BOP][controlsd.py][publish_logs()][IsVagBlindspotWarningVibratorEnabled] Get param exception")
+        isVagBlindspotWarningVibratorEnabled = False
+
+    # ----- IsVagBlindspotVibratorWithFlka -----
+    if isVagParamFromCerealEnabled:
+      isVagBlindspotVibratorWithFlka = self.sm['vagParam'].isVagBlindspotVibratorWithFlka
+    else :
+      params = Params()
+      try:
+        isVagBlindspotVibratorWithFlka = params.get_bool("IsVagBlindspotVibratorWithFlka")
+      except:
+        print("[BOP][controlsd.py][publish_logs()][IsVagBlindspotVibratorWithFlka] Get param exception")
+        isVagBlindspotVibratorWithFlka = False
+
+    if (isVagBlindspotEnabled and isVagBlindspotInfoVibratorEnabled):
+      if (((not CS.cruiseState.available and not CS.cruiseState.enabled) or (CS.cruiseState.available and isVagBlindspotVibratorWithFlka))):
+        CC.availableVagBlindspotInfoVibrator =  True
+      else:
+        CC.availableVagBlindspotInfoVibrator =  False
+    else:
+      CC.availableVagBlindspotInfoVibrator =  False
+
+    if (isVagBlindspotEnabled and isVagBlindspotWarningVibratorEnabled):
+      if (((not CS.cruiseState.available and not CS.cruiseState.enabled) or (CS.cruiseState.available and isVagBlindspotVibratorWithFlka))):
+        CC.availableVagBlindspotWarningVibrator =  True
+      else:
+        CC.availableVagBlindspotWarningVibrator =  False
+    else:
+      CC.availableVagBlindspotWarningVibrator =  False
+
     actuators = CC.actuators
     actuators.longControlState = self.LoC.long_control_state
 
@@ -599,7 +756,7 @@ class Controls:
 
     # State specific actions
 
-    if not CC.latActive:
+    if (not CC.latActive and not CC.availableVagFlka):
       self.LaC.reset()
     if not CC.longActive:
       self.LoC.reset(v_pid=CS.vEgo)
@@ -615,7 +772,7 @@ class Controls:
                                                                                        lat_plan.psis,
                                                                                        lat_plan.curvatures,
                                                                                        lat_plan.curvatureRates)
-      actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(CC.latActive, CS, self.VM, lp,
+      actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update((CC.latActive or CC.availableVagFlka), CS, self.VM, lp,
                                                                              self.last_actuators, self.steer_limited, self.desired_curvature,
                                                                              self.desired_curvature_rate, self.sm['liveLocationKalman'])
       actuators.curvature = self.desired_curvature
@@ -625,7 +782,7 @@ class Controls:
         if CC.longActive:
           actuators.accel = 4.0*clip(self.sm['testJoystick'].axes[0], -1, 1)
 
-        if CC.latActive:
+        if CC.latActive or CC.availableVagFlka:
           steer = clip(self.sm['testJoystick'].axes[1], -1, 1)
           # max angle is 45 for angle-based cars
           actuators.steer, actuators.steeringAngleDeg = steer, steer * 45.
@@ -708,7 +865,7 @@ class Controls:
 
     recent_blinker = (self.sm.frame - self.last_blinker_frame) * DT_CTRL < 5.0  # 5s blinker cooldown
     ldw_allowed = self.is_ldw_enabled and CS.vEgo > LDW_MIN_SPEED and not recent_blinker \
-                  and not CC.latActive and self.sm['liveCalibration'].calStatus == log.LiveCalibrationData.Status.calibrated
+                  and (not CC.latActive and not CC.availableVagFlka) and self.sm['liveCalibration'].calStatus == log.LiveCalibrationData.Status.calibrated
 
     model_v2 = self.sm['modelV2']
     desire_prediction = model_v2.meta.desirePrediction

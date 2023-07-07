@@ -175,6 +175,7 @@ struct CarState {
   regenBraking @45 :Bool; # this is user pedal only
   parkingBrake @39 :Bool;
   brakeHoldActive @38 :Bool;
+  brakeLights @19 :Bool;
 
   # steering wheel
   steeringAngleDeg @7 :Float32;
@@ -216,6 +217,139 @@ struct CarState {
 
   fuelGauge @41 :Float32; # battery or fuel tank level from 0.0 to 1.0
   charging @43 :Bool;
+
+  #VAG
+  leftBlindspotWarning @48 :Bool; # Is there something blocking the right lane change
+  rightBlindspotWarning @49 :Bool; # Is there something blocking the right lane change
+  vagAcc @50 :VagAcc;
+  vagTsr @51 :VagTsr; #Traffic sign recognition
+  vagTemperatureInfo @52 :VagTemperatureInfo;
+  vagSpeed @53 :Float32;
+
+
+  struct VagAcc {
+    vagAcc02 @0 :VagAcc02;
+    vagAcc04 @1 :VagAcc04;
+    vagAcc06 @2 :VagAcc06;
+    vagAcc07 @3 :VagAcc07;
+    vagAcc10 @4 :VagAcc10;
+    vagGraAcc01 @5 :VagGraAcc01;
+  }
+
+  struct VagAcc02 {
+    accWunschgeschw @0 :Float32;
+    accStatusPrimAnz @1 :Int32;
+    accAbstandsindex @2 :Int32;
+    accAkustik @3 :Int32;
+    accGesetzteZeitluecke @4 :Int32;
+    accOptischerFahrerhinweis @5 :Bool;
+    accTypTachokranz @6 :Bool;
+    accAnzeigeZeitluecke @7 :Bool;
+    accTachokranz @8 :Bool;
+    accDisplayPrio @9 :Bool;
+    accRelevantesObjekt @10 :Int32;
+    accTextePrimaeranz @11 :Int32;
+    accWunschgeschwErreicht @12 :Bool;
+    accStatusAnzeige @13 :Int32;
+  }
+
+  struct VagAcc04 {
+    accTexteZusatzanz @0 :Int32;
+    accStatusZusatzanz @1 :Int32;
+    accTexte @2 :Int32;
+    accTexteBrakingGuard @3 :Int32;
+    accWarnhinweis @4 :Bool;
+    accGeschwZielfahrzeug @5 :Float32;
+    accCharismaFahrPr @6 :Int32;
+    accCharismaStatus @7 :Int32;
+    accCharismaUmschaltung @8 :Int32;
+  }
+
+  struct VagAcc06 {
+    accLimitierteAnfahrdyn @0 :Bool;
+    accZulRegelabwUnten @1 :Float32;
+    accStartStoppInfo @2 :Int32;
+    accSollbeschleunigung02 @3 :Float32;
+    accZulRegelabwOben @4 :Float32;
+    accNegSollbeschlGrad02 @5 :Float32;
+    accPosSollbeschlGrad02 @6 :Float32;
+    accAnfahren @7 :Bool;
+    accAnhalten @8 :Bool;
+    accTyp @9 :Int32;
+    accStatusAcc @10 :Int32;
+    accMinimaleBremsung @11 :Bool;
+  }
+
+  struct VagAcc07 {
+    accDistanceToStop @0 :Float32;
+    accHoldRequest @1 :Bool;
+    accBoostRequest @2 :Bool;
+    accFreewheelRequest @3 :Bool;
+    accFreewheelType @4 :Int32;
+    accHoldType @5 :Int32;
+    accHoldRelease @6 :Bool;
+    accAccelSecondary @7 :Float32;
+    accAccelTsk @8 :Float32;
+  }
+
+  struct VagAcc10 {
+    awv1AnfPrefill @0 :Bool;
+    anbCmInfo @1 :Bool;
+    awv2Freigabe @2 :Bool;
+    awv1HbaParam @3 :Int32;
+    awv2Ruckprofil @4 :Int32;
+    awv2Priowarnung @5 :Bool;
+    anbCmAnforderung @6 :Bool;
+    anbInfoTeilbremsung @7 :Bool;
+    anbNotfallblinken @8 :Bool;
+    anbTeilbremsungFreigabe @9 :Bool;
+    anbZielbremsTeilbremsVerzAnf @10 :Float32;
+    anbZielbremsungFreigabe @11 :Bool;
+    awvVorstufe @12 :Bool;
+    awvHalten @13 :Bool;
+  }
+
+  struct VagGraAcc01 {
+    graHauptschalter @0 :Bool;
+    graAbbrechen @1 :Bool;
+    graTypHauptschalter @2 :Bool;
+    graLimiter @3 :Bool;
+    graTipSetzen @4 :Bool;
+    graTipHoch @5 :Bool;
+    graTipRunter @6 :Bool;
+    graTipWiederaufnahme @7 :Bool;
+    graVerstellungZeitluecke @8 :Int32;
+    graCodierung @9 :Int32;
+    graFehler @10 :Bool;
+    graTyp468 @11 :Int32;
+    graTipStufe2 @12 :Bool;
+    graButtonTypeInfo @13 :Int32;
+  }
+
+  struct VagTsr {
+    vzeAnzeigemodus @0 :Int32;
+    vzeHinweistext @1 :Int32;
+    vzeStatuszaehler1 @2 :Int32;
+    vzeStatuszaehler2 @3 :Int32;
+    vzeStatuszaehler3 @4 :Int32;
+    vzeVerkehrszeichen1 @5 :Int32;
+    vzeVerkehrszeichen2 @6 :Int32;
+    vzeVerkehrszeichen3 @7 :Int32;
+    vzeWarnungVerkehrszeichen1 @8 :Bool;
+    vzeWarnungVerkehrszeichen2 @9 :Bool;
+    vzeWarnungVerkehrszeichen3 @10 :Bool;
+    vzeZusatzschild1 @11 :Int32;
+    vzeZusatzschild2 @12 :Int32;
+    vzeZusatzschild3 @13 :Int32;
+    vzeHinweistext02 @14 :Int32;
+  }
+
+  struct VagTemperatureInfo {
+     vagEngineInAirTemperature @0 :Float32;
+     vagEngineOilTemperature @1 :Int32;
+     vagEngineCoolantTemperature @2 :Float32;
+     vagGearboxSumpfTemperature @3 :Int32;
+  }
 
   struct WheelSpeeds {
     # optional wheel speeds
@@ -271,7 +405,7 @@ struct CarState {
 
   # deprecated
   errorsDEPRECATED @0 :List(CarEvent.EventName);
-  brakeLightsDEPRECATED @19 :Bool;
+  #brakeLightsDEPRECATED @19 :Bool;
   steeringRateLimitedDEPRECATED @29 :Bool;
   canMonoTimesDEPRECATED @12: List(UInt64);
 }
@@ -334,6 +468,11 @@ struct CarControl {
 
   cruiseControl @4 :CruiseControl;
   hudControl @5 :HUDControl;
+
+  #VAG
+  availableVagFlka @17 :Bool;
+  availableVagBlindspotInfoVibrator @18 :Bool;
+  availableVagBlindspotWarningVibrator @19 :Bool;
 
   struct Actuators {
     # range from 0.0 - 1.0
@@ -405,6 +544,27 @@ struct CarControl {
       prompt @6;
       promptRepeat @7;
       promptDistracted @8;
+
+      leftBlindspot @9;
+      rightBlindspot @10;
+      leadCarGoing @11;
+      noLeadCarWarning @12;
+      leftCutIn @13;
+      rightCutIn @14;
+      speedLimit30Km @15;
+      speedLimit40Km @16;
+      speedLimit50Km @17;
+      speedLimit60Km @18;
+      speedLimit70Km @19;
+      speedLimit80Km @20;
+      speedLimit90Km @21;
+      speedLimit100Km @22;
+      speedLimit110Km @23;
+      leftBlinker @24;
+      rightBlinker @25;
+      leadCarHeavyBrake @26;
+      voiceTest @27;
+
     }
   }
 

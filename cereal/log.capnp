@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2023 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 using Cxx = import "./include/c++.capnp";
 $Cxx.namespace("cereal");
 
@@ -2214,6 +2220,9 @@ struct Event {
     userFlag @93 :UserFlag;
     uiDebug @102 :UIDebug;
 
+    # VAG
+    vagParam @123 :VagParam;
+
     # *********** debug ***********
     testJoystick @52 :Joystick;
     roadEncodeData @86 :EncodeData;
@@ -2276,4 +2285,80 @@ struct Event {
     driverStateDEPRECATED @59 :DriverStateDEPRECATED;
     sensorEventsDEPRECATED @11 :List(SensorEventData);
   }
+}
+
+struct VagParam {
+  # ===== Setting =====
+  isVagManualSoundVolumeEnable @0 :Bool;
+  vagSoundVolume @1 :Int32;
+  isVagManualOsdBacklightEnable @2 :Bool;
+  vagOsdBacklight @3 :Int32;
+  isVagInfoBoxEnabled @4 :Bool;
+  isVagBlinkerEnabled @5 :Bool;
+  isVagBrakeLightEnabled @6 :Bool;
+  isVagLeadCarEnabled @7 :Bool;
+
+  # ===== Feature =====
+  # ----- Blindspot -----
+  isVagBlindspotEnabled @8 :Bool;
+  isVagBlindspotInfoSoundEnabled @9 :Bool;
+  isVagBlindspotInfoVibratorEnabled @10 :Bool;
+  isVagBlindspotWarningSoundEnabled @11 :Bool;
+  isVagBlindspotWarningVibratorEnabled @12 :Bool;
+  isVagBlindspotVibratorWithFlka @13 :Bool;
+  # ----- FLKA -----
+  isVagFulltimeLkaEnabled @14 :Bool;
+  isVagFulltimeLkaEnableWithBlinker @15 :Bool;
+  isVagFulltimeLkaEnableWithBrake @16 :Bool;
+  isVagFulltimeLkaEnableWithAssistant @17 :Bool;
+  # ----- Lead car going -----
+  isVagLeadCarGoingRemindEnabled @18 :Bool;
+  isVagLeadCarGoingRemindSoundEnabled @19 :Bool;
+  # ----- No lead car -----
+  isVagNoLeadCarEnabled @20 :Bool;
+  isVagNoLeadCarWarningSoundEnabled @21 :Bool;
+  # ----- Vision presafe -----
+  isVagVisionPresafeEnabled @22 :Bool;
+  isVagVisionPresafeWarningSoundEnabled @23 :Bool;
+  isVagVisionPresafeWarningInterposeEnabled @24 :Bool;
+  # ----- Speed camera -----
+  isVagSpeedCameraEnabled @25 :Bool;
+  isVagSpeedLimitSoundEnabled @26 :Bool;
+  isVagSaccEnabled @27 :Bool;
+  vagSaccTolerance @28: Int32;
+  # ----- Online map -----
+  isVagOnlineMapEnabled @29 :Bool;
+  isVagOmaccEnabled @30 :Bool;
+  vagOmaccTolerance @31: Int32;
+
+  # ===== Test =====
+  isVagDebugOsdTestTextEnabled @32 :Bool;
+  isVagRadarAccTestTextEnabled @33 :Bool;
+  isVagVisionAccTestTextEnabled @34 :Bool;
+  isVagDebugItem1Enabled @35 :Bool;
+  isVagDebugItem2Enabled @36 :Bool;
+  isVagDebugItem3Enabled @37 :Bool;
+  isVagDebugItem4Enabled @38 :Bool;
+  isVagDebugItem5Enabled @39 :Bool;
+
+  # ===== Gerenal =====
+  isVagDevelopModeEnabled @40 :Bool;
+  isVagDevelopOnRoadUi @41 :Bool;
+  isVagRunningProcessLogEnabled @42 :Bool;
+  isVagParamFromCerealEnabled @43 :Bool;
+  isVagLeftBlinkerSoundEnabled @44 :Bool;
+  isVagRightBlinkerSoundEnabled @45 :Bool;
+
+  # ===== OSD =====
+  isVagDebugBlinkerTest @46 :Bool;
+  isVagDebugBlindspotInfoTest @47 :Bool;
+  isVagDebugBlindspotWarningTest @48 :Bool;
+  isVagDebugBrakeLightTest @49 :Bool;
+  isVagDebugLeadCarGoingRemindTest @50 :Bool;
+  isVagDebugNoLeadCarWarningTest @51 :Bool;
+  isVagDebugVisionPresafeTest @52 :Bool;
+
+  # ===== Log =====
+  isVagSaccSpeedCamTrackEnabled @53 :Bool;
+  isVagSaccVehicleTrackEnabled @54 :Bool;
 }

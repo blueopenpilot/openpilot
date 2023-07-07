@@ -29,7 +29,7 @@ class CarState(CarStateBase):
 
     return button_events
 
-  def update(self, pt_cp, cam_cp, ext_cp, trans_type):
+  def update(self, pt_cp, cam_cp, ext_cp, body_cp, trans_type):
     if self.CP.carFingerprint in PQ_CARS:
       return self.update_pq(pt_cp, cam_cp, ext_cp, trans_type)
 
@@ -57,7 +57,9 @@ class CarState(CarStateBase):
     # Verify EPS readiness to accept steering commands
     hca_status = self.CCP.hca_status_values.get(pt_cp.vl["LH_EPS_03"]["EPS_HCA_Status"])
     ret.steerFaultPermanent = hca_status in ("DISABLED", "FAULT")
-    ret.steerFaultTemporary = hca_status in ("INITIALIZING", "REJECTED")
+    ret.steerFaultTemporary = hca_status in ("INITIALIZING") #PONTEST , "REJECTED")
+    if hca_status in ("REJECTED"):
+      print("[BOP][carstate.py][update()] hca_status REJECTED")
 
     # Update gas, brakes, and gearshift.
     ret.gas = pt_cp.vl["Motor_20"]["MO_Fahrpedalrohwert_01"] / 100.0
@@ -95,6 +97,17 @@ class CarState(CarStateBase):
     if self.CP.enableBsm:
       ret.leftBlindspot = bool(ext_cp.vl["SWA_01"]["SWA_Infostufe_SWA_li"]) or bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_li"])
       ret.rightBlindspot = bool(ext_cp.vl["SWA_01"]["SWA_Infostufe_SWA_re"]) or bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_re"])
+      ret.leftBlindspotWarning = bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_li"])
+      ret.rightBlindspotWarning = bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_re"])
+
+    ret.vagTemperatureInfo.vagEngineInAirTemperature = float(pt_cp.vl["Motor_07"]["MO_Ansaugluft_Temp"])
+    ret.vagTemperatureInfo.vagEngineOilTemperature = int(pt_cp.vl["Motor_07"]["MO_Oel_Temp"])
+    ret.vagTemperatureInfo.vagEngineCoolantTemperature = float(pt_cp.vl["Motor_07"]["MO_Kuehlmittel_Temp"])
+    ret.vagTemperatureInfo.vagGearboxSumpfTemperature = int(body_cp.vl["Getriebe_14"]["GE_Sumpftemperatur"])
+    ret.vagSpeed = float(pt_cp.vl["VehicleSpeed"]["Speed"])
+    ret.brakeLights = bool(pt_cp.vl["ESP_05"]["ESP_Status_Bremsdruck"])
+
+
 
     # Consume factory LDW data relevant for factory SWA (Lane Change Assist)
     # and capture it for forwarding to the blind spot radar controller
@@ -299,6 +312,11 @@ class CarState(CarStateBase):
       ("GRA_Tip_Stufe_2", "GRA_ACC_01"),         # unknown related to stalk type
       ("GRA_ButtonTypeInfo", "GRA_ACC_01"),      # unknown related to stalk type
       ("COUNTER", "GRA_ACC_01"),                 # GRA_ACC_01 CAN message counter
+      ("MO_Ansaugluft_Temp", "Motor_07"),
+      ("MO_Oel_Temp", "Motor_07"),
+      ("MO_Kuehlmittel_Temp", "Motor_07"),
+      ("Speed", "VehicleSpeed"),
+      ("ESP_Status_Bremsdruck", "ESP_05"),
     ]
 
     checks = [
@@ -318,6 +336,8 @@ class CarState(CarStateBase):
       ("Kombi_01", 2),      # From J285 Instrument cluster
       ("Blinkmodi_02", 1),  # From J519 BCM (sent at 1Hz when no lights active, 50Hz when active)
       ("Kombi_03", 0),      # From J285 instrument cluster (not present on older cars, 1Hz when present)
+      ("Motor_07", 2),
+      ("VehicleSpeed", 50),
     ]
 
     if CP.transmissionType == TransmissionType.automatic:
@@ -370,6 +390,20 @@ class CarState(CarStateBase):
         checks += MqbExtraSignals.bsm_radar_checks
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CANBUS.cam)
+
+  @staticmethod
+  def get_body_can_parser(CP):
+    signals = [
+      # sig_name, sig_address
+      ("GE_Sumpftemperatur", "Getriebe_14"),
+    ]
+
+    checks = [
+      # sig_address, frequency
+      ("Getriebe_14", 10),
+    ]
+
+    return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, CANBUS.body)
 
   @staticmethod
   def get_can_parser_pq(CP):

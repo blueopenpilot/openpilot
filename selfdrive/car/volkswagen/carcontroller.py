@@ -42,8 +42,12 @@ class CarController:
       # torque value. Do that anytime we happen to have 0 torque, or failing that,
       # when exceeding ~1/3 the 360 second timer.
 
-      if CC.latActive:
-        new_steer = int(round(actuators.steer * self.CCP.STEER_MAX))
+      #Pon FLKA
+      if (CC.latActive or CC.availableVagFlka):
+        steer_max = self.CCP.STEER_MAX
+        #if (CS.out.vagSpeed < 15):
+        #  steer_max = 230
+        new_steer = int(round(actuators.steer * steer_max))
         apply_steer = apply_driver_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.CCP)
         if apply_steer == 0:
           hcaEnabled = False
@@ -67,7 +71,30 @@ class CarController:
         apply_steer = 0
 
       self.apply_steer_last = apply_steer
-      can_sends.append(self.CCS.create_steering_control(self.packer_pt, CANBUS.pt, apply_steer, hcaEnabled))
+
+
+      #Pon Blindspot info/warning vibrator
+      #vibrator_threshold = 0.0
+      vibratorEnabled = 0
+      #accAvailable = CS.out.cruiseState.available
+      #accEnabled = CS.out.cruiseState.enabled
+      leftBlindspot = CS.out.leftBlindspot
+      rightBlindspot = CS.out.rightBlindspot
+      leftBlindspotWarning = CS.out.leftBlindspotWarning
+      rightBlindspotWarning = CS.out.rightBlindspotWarning
+      gearShifter = CS.out.gearShifter
+
+      #print("[BOP][carcontroller.py][update()][Blindspot]", c.availableVagBlindspotInfoVibrator, c.availableVagBlindspotWarningVibrator)
+      if (CC.availableVagBlindspotInfoVibrator and (leftBlindspot or rightBlindspot)):
+        vibratorEnabled = 1
+
+      if (CC.availableVagBlindspotWarningVibrator and (leftBlindspotWarning or rightBlindspotWarning)):
+        vibratorEnabled = 2
+
+      #if (CS.out.vagSpeed < 15 and apply_steer > 245):
+      #  apply_steer = 245
+
+      can_sends.append(self.CCS.create_steering_control(self.packer_pt, CANBUS.pt, apply_steer, hcaEnabled, vibratorEnabled))
 
     # **** Acceleration Controls ******************************************** #
 

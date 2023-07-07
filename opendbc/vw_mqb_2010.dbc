@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2023 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 VERSION ""
 
 
@@ -1181,6 +1187,23 @@ BO_ 1716 VIN_01: 8 Gateway_MQB
  SG_ VIN_3 m0 : 56|8@1+ (1,0) [0|255] ""  Airbag_MQB
  SG_ VIN_10 m1 : 56|8@1+ (1,0) [0|255] ""  Airbag_MQB
  SG_ VIN_17 m2 : 56|8@1+ (1,0) [0|255] ""  Airbag_MQB
+
+BO_ 385 VZE_01: 8 Vector__XXX
+ SG_ VZE_Anzeigemodus : 0|2@1+ (1,0) [0|3] ""  Frontradar
+ SG_ VZE_Hinweistext : 2|3@1+ (1,0) [1|7] ""  Frontradar
+ SG_ VZE_Statuszaehler_1 : 5|2@1+ (1,0) [0|3] ""  Frontradar
+ SG_ VZE_Statuszaehler_2 : 7|2@1+ (1,0) [0|3] ""  Frontradar
+ SG_ VZE_Statuszaehler_3 : 9|2@1+ (1,0) [0|3] ""  Frontradar
+ SG_ VZE_Verkehrszeichen_1 : 11|8@1+ (1,0) [1|255] ""  Frontradar
+ SG_ VZE_Verkehrszeichen_2 : 19|8@1+ (1,0) [1|255] ""  Frontradar
+ SG_ VZE_Verkehrszeichen_3 : 27|8@1+ (1,0) [1|255] ""  Frontradar
+ SG_ VZE_Warnung_Verkehrszeichen_1 : 35|1@1+ (1,0) [0|1] ""  Frontradar
+ SG_ VZE_Warnung_Verkehrszeichen_2 : 36|1@1+ (1,0) [0|1] ""  Frontradar
+ SG_ VZE_Warnung_Verkehrszeichen_3 : 37|1@1+ (1,0) [0|1] ""  Frontradar
+ SG_ VZE_Zusatzschild_1 : 38|4@1+ (1,0) [1|15] ""  Frontradar
+ SG_ VZE_Zusatzschild_2 : 42|4@1+ (1,0) [1|15] ""  Frontradar
+ SG_ VZE_Zusatzschild_3 : 46|4@1+ (1,0) [1|15] ""  Frontradar
+ SG_ VZE_Hinweistext_02 : 50|4@1+ (1,0) [1|15] ""  Frontradar
 
 BO_ 175 Waehlhebel_03: 4 Waehlhebel_MQB
  SG_ WH_Status_Sperre : 0|3@1+ (1,0) [0|7] "" Getriebe_DQ_Hybrid_MQB,Getriebe_DQ_MQB
