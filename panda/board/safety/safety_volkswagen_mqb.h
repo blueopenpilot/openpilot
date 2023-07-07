@@ -20,23 +20,27 @@ const LongitudinalLimits VOLKSWAGEN_MQB_LONG_LIMITS = {
   .inactive_accel = 3010,  // VW sends one increment above the max range when inactive
 };
 
-#define MSG_ESP_19      0x0B2   // RX from ABS, for wheel speeds
-#define MSG_LH_EPS_03   0x09F   // RX from EPS, for driver steering torque
-#define MSG_ESP_05      0x106   // RX from ABS, for brake switch state
-#define MSG_TSK_06      0x120   // RX from ECU, for ACC status from drivetrain coordinator
-#define MSG_MOTOR_20    0x121   // RX from ECU, for driver throttle input
-#define MSG_ACC_06      0x122   // TX by OP, ACC control instructions to the drivetrain coordinator
-#define MSG_HCA_01      0x126   // TX by OP, Heading Control Assist steering torque
-#define MSG_GRA_ACC_01  0x12B   // TX by OP, ACC control buttons for cancel/resume
-#define MSG_ACC_07      0x12E   // TX by OP, ACC control instructions to the drivetrain coordinator
-#define MSG_ACC_02      0x30C   // TX by OP, ACC HUD data to the instrument cluster
-#define MSG_MOTOR_14    0x3BE   // RX from ECU, for brake switch status
-#define MSG_LDW_02      0x397   // TX by OP, Lane line recognition and text alerts
+#define MSG_ESP_19                  0x0B2   // RX from ABS, for wheel speeds
+#define MSG_LH_EPS_03               0x09F   // RX from EPS, for driver steering torque
+#define MSG_ESP_05                  0x106   // RX from ABS, for brake switch state
+#define MSG_TSK_06                  0x120   // RX from ECU, for ACC status from drivetrain coordinator
+#define MSG_MOTOR_20                0x121   // RX from ECU, for driver throttle input
+#define MSG_ACC_06                  0x122   // TX by OP, ACC control instructions to the drivetrain coordinator
+#define MSG_HCA_01                  0x126   // TX by OP, Heading Control Assist steering torque
+#define MSG_GRA_ACC_01              0x12B   // TX by OP, ACC control buttons for cancel/resume
+#define MSG_ACC_07                  0x12E   // TX by OP, ACC control instructions to the drivetrain coordinator
+#define MSG_ACC_02                  0x30C   // TX by OP, ACC HUD data to the instrument cluster
+#define MSG_MOTOR_14                0x3BE   // RX from ECU, for brake switch status
+#define MSG_LDW_02                  0x397   // TX by OP, Lane line recognition and text alerts
+#define MSG_BCM_01                  1626
+#define MSG_CHARISMA_01             901
 
 // Transmit of GRA_ACC_01 is allowed on bus 0 and 2 to keep compatibility with gateway and camera integration
 const CanMsg VOLKSWAGEN_MQB_STOCK_TX_MSGS[] = {{MSG_HCA_01, 0, 8}, {MSG_GRA_ACC_01, 0, 8}, {MSG_GRA_ACC_01, 2, 8},
+                                               {MSG_BCM_01, 1, 8}, {MSG_CHARISMA_01, 1, 8},
                                                {MSG_LDW_02, 0, 8}, {MSG_LH_EPS_03, 2, 8}};
 const CanMsg VOLKSWAGEN_MQB_LONG_TX_MSGS[] = {{MSG_HCA_01, 0, 8}, {MSG_LDW_02, 0, 8}, {MSG_LH_EPS_03, 2, 8},
+                                              {MSG_BCM_01, 1, 8}, {MSG_CHARISMA_01, 1, 8},
                                               {MSG_ACC_02, 0, 8}, {MSG_ACC_06, 0, 8}, {MSG_ACC_07, 0, 8}};
 
 RxCheck volkswagen_mqb_rx_checks[] = {
@@ -145,6 +149,7 @@ static void volkswagen_mqb_rx_hook(const CANPacket_t *to_push) {
       int acc_status = (GET_BYTE(to_push, 3) & 0x7U);
       bool cruise_engaged = (acc_status == 3) || (acc_status == 4) || (acc_status == 5);
       acc_main_on = cruise_engaged || (acc_status == 2);
+      lateral_controls_allowed = acc_main_on;
 
       if (!volkswagen_longitudinal) {
         pcm_cruise_check(cruise_engaged);
@@ -152,6 +157,7 @@ static void volkswagen_mqb_rx_hook(const CANPacket_t *to_push) {
 
       if (!acc_main_on) {
         controls_allowed = false;
+        lateral_controls_allowed = false;
       }
     }
 

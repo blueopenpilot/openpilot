@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 # python library to interface with panda
 import os
 import sys
@@ -111,6 +117,7 @@ class ALTERNATIVE_EXPERIENCE:
   DISABLE_STOCK_AEB = 2
   RAISE_LONGITUDINAL_LIMITS_TO_ISO_MAX = 8
   ALLOW_AEB = 16
+  ALWAYS_ON_LATERAL = 32
 
 class Panda:
 

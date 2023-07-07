@@ -209,6 +209,7 @@ void safety_tick(const safety_config *safety_config);
 
 // This can be set by the safety hooks
 bool controls_allowed = false;
+bool lateral_controls_allowed = false;
 bool relay_malfunction = false;
 bool gas_pressed = false;
 bool gas_pressed_prev = false;
@@ -266,3 +267,6 @@ int alternative_experience = 0;
 uint32_t safety_mode_cnt = 0U;
 // allow 1s of transition timeout after relay changes state before assessing malfunctioning
 const uint32_t RELAY_TRNS_TIMEOUT = 1U;
+
+// Always on Lateral
+#define ALT_EXP_ALWAYS_ON_LATERAL 32
