@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #include <cassert>
 #include <cmath>
 #include <string>
@@ -280,9 +286,10 @@ DevicePanel::DevicePanel(SettingsWindow *parent) : ListWidget(parent) {
   power_layout->addWidget(poweroff_btn);
   QObject::connect(poweroff_btn, &QPushButton::clicked, this, &DevicePanel::poweroff);
 
-  if (!Hardware::PC()) {
-    connect(uiState(), &UIState::offroadTransition, poweroff_btn, &QPushButton::setVisible);
-  }
+  //Pon Disable poweroff button
+  //if (!Hardware::PC()) {
+  //  connect(uiState(), &UIState::offroadTransition, poweroff_btn, &QPushButton::setVisible);
+  //}
 
   setStyleSheet(R"(
     #reboot_btn { height: 120px; border-radius: 15px; background-color: #393939; }
@@ -368,7 +375,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   panel_widget = new QStackedWidget();
 
   // close button
-  QPushButton *close_btn = new QPushButton(tr("×"));
+  QPushButton *close_btn = new QPushButton(tr("X"));
   close_btn->setStyleSheet(R"(
     QPushButton {
       font-size: 140px;
