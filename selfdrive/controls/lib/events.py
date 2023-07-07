@@ -426,8 +426,10 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   # ********** events only containing alerts that display while engaged **********
 
   EventName.steerTempUnavailableSilent: {
-    ET.WARNING: Alert(
-      "Steering Temporarily Unavailable",
+    #Pon FLKA  PONTEST
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
+      "Steering Temporarily Unavailable 1",
       "",
       AlertStatus.userPrompt, AlertSize.small,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.prompt, 1.8),
@@ -502,7 +504,9 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   },
 
   EventName.preLaneChangeLeft: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Steer Left to Start Lane Change Once Safe",
       "",
       AlertStatus.normal, AlertSize.small,
@@ -510,7 +514,9 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   },
 
   EventName.preLaneChangeRight: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Steer Right to Start Lane Change Once Safe",
       "",
       AlertStatus.normal, AlertSize.small,
@@ -518,7 +524,9 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   },
 
   EventName.laneChangeBlocked: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Car Detected in Blindspot",
       "",
       AlertStatus.userPrompt, AlertSize.small,
@@ -526,7 +534,9 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   },
 
   EventName.laneChange: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Changing Lanes",
       "",
       AlertStatus.normal, AlertSize.small,
@@ -534,7 +544,9 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   },
 
   EventName.steerSaturated: {
-    ET.WARNING: Alert(
+    #Pon FLKA
+    #ET.WARNING: Alert(
+    ET.PERMANENT: Alert(
       "Take Control",
       "Turn Exceeds Steering Limit",
       AlertStatus.userPrompt, AlertSize.mid,
@@ -665,8 +677,10 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   },
 
   EventName.steerTempUnavailable: {
-    ET.SOFT_DISABLE: soft_disable_alert("Steering Temporarily Unavailable"),
-    ET.NO_ENTRY: NoEntryAlert("Steering Temporarily Unavailable"),
+    #Pon FLKA  PONTEST
+    ET.PERMANENT: soft_disable_alert("Steering Temporarily Unavailable 2"),
+    ET.SOFT_DISABLE: soft_disable_alert("Steering Temporarily Unavailable 2"),
+    ET.NO_ENTRY: NoEntryAlert("Steering Temporarily Unavailable 2"),
   },
 
   EventName.steerTimeLimit: {

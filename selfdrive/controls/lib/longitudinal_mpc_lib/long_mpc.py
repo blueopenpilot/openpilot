@@ -65,8 +65,9 @@ def get_jerk_factor(personality=log.LongitudinalPersonality.standard):
   elif personality==log.LongitudinalPersonality.aggressive:
     return 0.5
   else:
-    raise NotImplementedError("Longitudinal personality not supported")
-
+    #raise NotImplementedError("Longitudinal personality not supported")
+    #Pon set relaxed to default
+    return 1.0
 
 def get_T_FOLLOW(personality=log.LongitudinalPersonality.standard):
   if personality==log.LongitudinalPersonality.relaxed:
@@ -76,7 +77,9 @@ def get_T_FOLLOW(personality=log.LongitudinalPersonality.standard):
   elif personality==log.LongitudinalPersonality.aggressive:
     return 1.25
   else:
-    raise NotImplementedError("Longitudinal personality not supported")
+    #raise NotImplementedError("Longitudinal personality not supported")
+    #Pon set relaxed to default
+    return 1.75
 
 def get_stopped_equivalence_factor(v_lead):
   return (v_lead**2) / (2 * COMFORT_BRAKE)

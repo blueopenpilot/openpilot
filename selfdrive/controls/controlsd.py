@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import os
 import math
 import time
@@ -96,6 +102,7 @@ class Controls:
       ignore += ['roadCameraState', 'wideRoadCameraState']
     self.sm = messaging.SubMaster(['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
                                    'carOutput', 'driverMonitoringState', 'longitudinalPlan', 'liveLocationKalman',
+                                   'vagParam',
                                    'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters',
                                    'testJoystick'] + self.camera_packets + self.sensor_packets,
                                   ignore_alive=ignore, ignore_avg_freq=ignore+['radarState', 'testJoystick'], ignore_valid=['testJoystick', ],
@@ -284,7 +291,8 @@ class Controls:
         self.events.add(EventName.controlsMismatch)
 
       if log.PandaState.FaultType.relayMalfunction in pandaState.faults:
-        self.events.add(EventName.relayMalfunction)
+        if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
+          self.events.add(EventName.relayMalfunction)
 
     # Handle HW and system malfunctions
     # Order is very intentional here. Be careful when modifying this.
@@ -310,9 +318,13 @@ class Controls:
     if not self.sm.valid['pandaStates']:
       self.events.add(EventName.usbError)
     if CS.canTimeout:
-      self.events.add(EventName.canBusMissing)
+      #Pon: For panda jungle develop
+      if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
+        self.events.add(EventName.canBusMissing)
     elif not CS.canValid:
-      self.events.add(EventName.canError)
+      #Pon: For panda jungle develop
+      if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
+        self.events.add(EventName.canError)
 
     # generic catch-all. ideally, a more specific event should be added above instead
     has_disable_events = self.events.contains(ET.NO_ENTRY) and (self.events.contains(ET.SOFT_DISABLE) or self.events.contains(ET.IMMEDIATE_DISABLE))
@@ -463,7 +475,8 @@ class Controls:
             self.soft_disable_timer = int(SOFT_DISABLE_TIME / DT_CTRL)
             self.current_alert_types.append(ET.SOFT_DISABLE)
 
-          elif self.events.contains(ET.OVERRIDE_LATERAL) or self.events.contains(ET.OVERRIDE_LONGITUDINAL):
+          #elif self.events.contains(ET.OVERRIDE_LATERAL) or self.events.contains(ET.OVERRIDE_LONGITUDINAL):
+          elif self.events.contains(ET.OVERRIDE_LONGITUDINAL):
             self.state = State.overriding
             self.current_alert_types += [ET.OVERRIDE_LATERAL, ET.OVERRIDE_LONGITUDINAL]
 
@@ -506,7 +519,8 @@ class Controls:
         else:
           if self.events.contains(ET.PRE_ENABLE):
             self.state = State.preEnabled
-          elif self.events.contains(ET.OVERRIDE_LATERAL) or self.events.contains(ET.OVERRIDE_LONGITUDINAL):
+          #elif self.events.contains(ET.OVERRIDE_LATERAL) or self.events.contains(ET.OVERRIDE_LONGITUDINAL):
+          elif self.events.contains(ET.OVERRIDE_LONGITUDINAL):
             self.state = State.overriding
           else:
             self.state = State.enabled
@@ -547,6 +561,99 @@ class Controls:
                    (not standstill or self.joystick_mode)
     CC.longActive = self.enabled and not self.events.contains(ET.OVERRIDE_LONGITUDINAL) and self.CP.openpilotLongitudinalControl
 
+
+
+    #VAG
+    # ===== Vag param settings =====
+    # ----- FLKA -----
+    isVagFulltimeLkaEnabled = self.sm['vagParam'].vagParamFeature.isVagFulltimeLkaEnabled
+    isVagFulltimeLkaEnableWithBlinker = self.sm['vagParam'].vagParamFeature.isVagFulltimeLkaEnableWithBlinker
+    isVagFulltimeLkaEnableWithBrake = self.sm['vagParam'].vagParamFeature.isVagFulltimeLkaEnableWithBrake
+    isVagFulltimeLkaEnableWithAssistant = self.sm['vagParam'].vagParamFeature.isVagFulltimeLkaEnableWithAssistant
+    # ----- Blindspot vibrator -----
+    isVagBlindspotEnabled = self.sm['vagParam'].vagParamFeature.isVagBlindspotEnabled
+    isVagBlindspotInfoVibratorEnabled = self.sm['vagParam'].vagParamFeature.isVagBlindspotInfoVibratorEnabled
+    isVagBlindspotWarningVibratorEnabled = self.sm['vagParam'].vagParamFeature.isVagBlindspotWarningVibratorEnabled
+    isVagBlindspotVibratorWithFlka = self.sm['vagParam'].vagParamFeature.isVagBlindspotVibratorWithFlka
+    # ----- Force disable startstop -----
+    CC.vagCarControl.disableVagStartStop = self.sm['vagParam'].vagParamFeature.isVagForceDisableStartstop
+    # ----- Driving Mode -----
+    CC.vagCarControl.enableVagDrivingMode = self.sm['vagParam'].vagParamFeature.isVagDrivingModeEnabled
+    CC.vagCarControl.vagDrivingMode = self.sm['vagParam'].vagParamFeature.vagDrivingMode
+    CC.vagCarControl.enableVagDynamicDcc = self.sm['vagParam'].vagParamFeature.isVagDynamicDccEnabled
+
+    # ===== (HCA_01) =====
+    self.epsReadyForHca01 = bool(not CS.steerFaultTemporary \
+                                and not CS.steerFaultPermanent \
+                                and not standstill)
+    self.engineReadyForHca01 = bool(CS.engineRpm > 0)
+    self.gearShifterReadyForHca01 = bool(CS.gearShifter==car.CarState.GearShifter.drive \
+                                   or CS.gearShifter==car.CarState.GearShifter.sport \
+                                   or CS.gearShifter==car.CarState.GearShifter.manumatic \
+                                   or CS.gearShifter==car.CarState.GearShifter.eco)
+    self.speedReadyForHca01 = bool(CS.vagCarState.vagUiField.speed > 0)
+
+    # ===== FLKA =====
+    if bool(CS.leftBlinker or CS.rightBlinker):
+      if isVagFulltimeLkaEnableWithBlinker:
+        FulltimeLkaEnableWithBlinker = True
+      else:
+        FulltimeLkaEnableWithBlinker = False
+    else:
+      FulltimeLkaEnableWithBlinker = True
+
+    if CS.brakePressed:
+      if isVagFulltimeLkaEnableWithBrake:
+        FulltimeLkaEnableWithBrake = True
+      else:
+        FulltimeLkaEnableWithBrake = False
+    else:
+      FulltimeLkaEnableWithBrake = True
+
+    self.settingsEnableReadyForFlka = bool(isVagFulltimeLkaEnabled \
+                                           and FulltimeLkaEnableWithBlinker \
+                                           and FulltimeLkaEnableWithBrake)
+    self.cruiseStateReadyForFlka = bool(CS.cruiseState.available)
+    self.cameraCalibratedForFlka = bool(self.sm['liveCalibration'].calStatus == log.LiveCalibrationData.Status.calibrated)
+
+    CC.vagCarControl.availableVagFlka = bool(self.initialized \
+                          and self.epsReadyForHca01 \
+                          and self.engineReadyForHca01 \
+                          and self.gearShifterReadyForHca01 \
+                          and self.speedReadyForHca01 \
+                          and self.settingsEnableReadyForFlka \
+                          and self.cruiseStateReadyForFlka \
+                          and self.cameraCalibratedForFlka)
+
+    if(CC.vagCarControl.availableVagFlka and isVagFulltimeLkaEnableWithAssistant):
+      CC.latActive = CC.vagCarControl.availableVagFlka
+
+    # ===== Blindspot Vibrator =====
+    self.settingsEnableReadyForInfoBlindspotVibrator = bool(isVagBlindspotEnabled \
+                                                       and isVagBlindspotInfoVibratorEnabled)
+    self.settingsEnableReadyForWarningBlindspotVibrator = bool(isVagBlindspotEnabled \
+                                                          and isVagBlindspotWarningVibratorEnabled)
+    self.cruiseStateReadyForBlindspotVibrator = bool((CS.cruiseState.available and isVagBlindspotVibratorWithFlka) \
+                                                or (not CS.cruiseState.available and not CS.cruiseState.enabled))
+
+    CC.vagCarControl.availableVagBlindspotInfoVibrator = bool(self.initialized \
+                                        and self.epsReadyForHca01 \
+                                        and self.engineReadyForHca01 \
+                                        and self.gearShifterReadyForHca01 \
+                                        and self.speedReadyForHca01 \
+                                        and self.settingsEnableReadyForInfoBlindspotVibrator \
+                                        and self.cruiseStateReadyForBlindspotVibrator \
+                                        and (CS.leftBlindspot or CS.rightBlindspot))
+
+    CC.vagCarControl.availableVagBlindspotWarningVibrator = bool(self.initialized \
+                                        and self.epsReadyForHca01 \
+                                        and self.engineReadyForHca01 \
+                                        and self.gearShifterReadyForHca01 \
+                                        and self.speedReadyForHca01 \
+                                        and self.settingsEnableReadyForWarningBlindspotVibrator \
+                                        and self.cruiseStateReadyForBlindspotVibrator \
+                                        and (CS.vagCarState.leftBlindspotWarning or CS.vagCarState.rightBlindspotWarning))
+
     actuators = CC.actuators
     actuators.longControlState = self.LoC.long_control_state
 
@@ -560,7 +667,7 @@ class Controls:
 
     # State specific actions
 
-    if not CC.latActive:
+    if (not CC.latActive and not CC.vagCarControl.availableVagFlka):
       self.LaC.reset()
     if not CC.longActive:
       self.LoC.reset(v_pid=CS.vEgo)
@@ -574,7 +681,7 @@ class Controls:
       # Steering PID loop and lateral MPC
       self.desired_curvature = clip_curvature(CS.vEgo, self.desired_curvature, model_v2.action.desiredCurvature)
       actuators.curvature = self.desired_curvature
-      actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(CC.latActive, CS, self.VM, lp,
+      actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update((CC.latActive or CC.vagCarControl.availableVagFlka), CS, self.VM, lp,
                                                                              self.steer_limited, self.desired_curvature,
                                                                              self.sm['liveLocationKalman'])
     else:
@@ -590,7 +697,7 @@ class Controls:
         if CC.longActive:
           actuators.accel = 4.0*clip(joystick_axes[0], -1, 1)
 
-        if CC.latActive:
+        if CC.latActive or CC.vagCarControl.availableVagFlka:
           steer = clip(joystick_axes[1], -1, 1)
           # max angle is 45 for angle-based cars, max curvature is 0.02
           actuators.steer, actuators.steeringAngleDeg, actuators.curvature = steer, steer * 90., steer * -0.02
@@ -681,7 +788,7 @@ class Controls:
 
     recent_blinker = (self.sm.frame - self.last_blinker_frame) * DT_CTRL < 5.0  # 5s blinker cooldown
     ldw_allowed = self.is_ldw_enabled and CS.vEgo > LDW_MIN_SPEED and not recent_blinker \
-                  and not CC.latActive and self.sm['liveCalibration'].calStatus == log.LiveCalibrationData.Status.calibrated
+                  and (not CC.latActive and not CC.vagCarControl.availableVagFlka) and self.sm['liveCalibration'].calStatus == log.LiveCalibrationData.Status.calibrated
 
     model_v2 = self.sm['modelV2']
     desire_prediction = model_v2.meta.desirePrediction
