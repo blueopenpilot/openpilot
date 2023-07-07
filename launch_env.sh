@@ -1,4 +1,9 @@
 #!/usr/bin/bash
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
 
 export OMP_NUM_THREADS=1
 export MKL_NUM_THREADS=1
@@ -11,3 +16,4 @@ if [ -z "$AGNOS_VERSION" ]; then
 fi
 
 export STAGING_ROOT="/data/safe_staging"
+#export FINGERPRINT="SKODA_KODIAQ_MK1"
