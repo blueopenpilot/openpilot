@@ -1,11 +1,18 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import numpy as np
+import cereal.messaging as messaging
+
 from cereal import car
 from openpilot.common.conversions import Conversions as CV
 from openpilot.selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
 from openpilot.selfdrive.car.volkswagen.values import DBC, CANBUS, NetworkLocation, TransmissionType, GearShifter, \
                                             CarControllerParams, VolkswagenFlags
-
 
 class CarState(CarStateBase):
   def __init__(self, CP):
@@ -17,6 +24,55 @@ class CarState(CarStateBase):
     self.esp_hold_confirmation = False
     self.upscale_lead_car_signal = False
     self.eps_stock_values = False
+
+    self.sm = messaging.SubMaster(['vagParam'])
+
+    #print("[BOP][carstate.py][__init__] CP.carName=", CP.carName)
+    #print("[BOP][carstate.py][__init__] CP.carFingerprint=", CP.carFingerprint)
+    #print("[BOP][carstate.py][__init__] CP.fuzzyFingerprint=", CP.fuzzyFingerprint)
+    #print("[BOP][carstate.py][__init__] CP.notCar=", CP.notCar)
+    #print("[BOP][carstate.py][__init__] CP.enableGasInterceptor=", CP.enableGasInterceptor)
+    #print("[BOP][carstate.py][__init__] CP.pcmCruise=", CP.pcmCruise)
+    #print("[BOP][carstate.py][__init__] CP.enableDsu=", CP.enableDsu)
+    #print("[BOP][carstate.py][__init__] CP.enableBsm=", CP.enableBsm)
+    #print("[BOP][carstate.py][__init__] CP.flags=", CP.flags)
+    #print("[BOP][carstate.py][__init__] CP.experimentalLongitudinalAvailable=", CP.experimentalLongitudinalAvailable)
+    #print("[BOP][carstate.py][__init__] CP.minEnableSpeed=", CP.minEnableSpeed)
+    #print("[BOP][carstate.py][__init__] CP.minSteerSpeed=", CP.minSteerSpeed)
+    #print("[BOP][carstate.py][__init__] CP.safetyConfigs=", CP.safetyConfigs)
+    #print("[BOP][carstate.py][__init__] CP.alternativeExperience=", CP.alternativeExperience)
+    #print("[BOP][carstate.py][__init__] CP.maxLateralAccel=", CP.maxLateralAccel)
+    #print("[BOP][carstate.py][__init__] CP.autoResumeSng=", CP.autoResumeSng)
+    #print("[BOP][carstate.py][__init__] CP.mass=", CP.mass)
+    #print("[BOP][carstate.py][__init__] CP.wheelbase=", CP.wheelbase)
+    #print("[BOP][carstate.py][__init__] CP.centerToFront=", CP.centerToFront)
+    #print("[BOP][carstate.py][__init__] CP.steerRatio=", CP.steerRatio)
+    #print("[BOP][carstate.py][__init__] CP.longitudinalTuning=", CP.longitudinalTuning)
+    #print("[BOP][carstate.py][__init__] CP.lateralParams=", CP.lateralParams)
+    #print("[BOP][carstate.py][__init__] CP.lateralTuning=", CP.lateralTuning)
+    #print("[BOP][carstate.py][__init__] CP.steerLimitAlert=", CP.steerLimitAlert)
+    #print("[BOP][carstate.py][__init__] CP.steerLimitTimer=", CP.steerLimitTimer)
+    #print("[BOP][carstate.py][__init__] CP.vEgoStopping=", CP.vEgoStopping)
+    #print("[BOP][carstate.py][__init__] CP.vEgoStarting=", CP.vEgoStarting)
+    #print("[BOP][carstate.py][__init__] CP.stoppingControl=", CP.stoppingControl)
+    #print("[BOP][carstate.py][__init__] CP.steerControlType=", CP.steerControlType)
+    #print("[BOP][carstate.py][__init__] CP.radarUnavailable=", CP.radarUnavailable)
+    #print("[BOP][carstate.py][__init__] CP.stopAccel=", CP.stopAccel)
+    #print("[BOP][carstate.py][__init__] CP.stoppingDecelRate=", CP.stoppingDecelRate)
+    #print("[BOP][carstate.py][__init__] CP.startAccel=", CP.startAccel)
+    #print("[BOP][carstate.py][__init__] CP.startingState=", CP.startingState)
+    #print("[BOP][carstate.py][__init__] CP.steerActuatorDelay=", CP.steerActuatorDelay)
+    #print("[BOP][carstate.py][__init__] CP.longitudinalActuatorDelayLowerBound=", CP.longitudinalActuatorDelayLowerBound)
+    #print("[BOP][carstate.py][__init__] CP.longitudinalActuatorDelayUpperBound=", CP.longitudinalActuatorDelayUpperBound)
+    #print("[BOP][carstate.py][__init__] CP.openpilotLongitudinalControl=", CP.openpilotLongitudinalControl)
+    #print("[BOP][carstate.py][__init__] CP.carVin=", CP.carVin)
+    #print("[BOP][carstate.py][__init__] CP.dashcamOnly=", CP.dashcamOnly)
+    #print("[BOP][carstate.py][__init__] CP.transmissionType=", CP.transmissionType)
+    #print("[BOP][carstate.py][__init__] CP.carFw=", CP.carFw)
+    #print("[BOP][carstate.py][__init__] CP.radarTimeStep=", CP.radarTimeStep)
+    #print("[BOP][carstate.py][__init__] CP.fingerprintSource=", CP.fingerprintSource)
+    #print("[BOP][carstate.py][__init__] CP.networkLocation=", CP.networkLocation)
+    #print("[BOP][carstate.py][__init__] CP.wheelSpeedFactor=", CP.wheelSpeedFactor)
 
   def create_button_events(self, pt_cp, buttons):
     button_events = []
@@ -32,7 +88,7 @@ class CarState(CarStateBase):
 
     return button_events
 
-  def update(self, pt_cp, cam_cp, ext_cp, trans_type):
+  def update(self, pt_cp, cam_cp, ext_cp, body_cp, trans_type):
     if self.CP.flags & VolkswagenFlags.PQ:
       return self.update_pq(pt_cp, cam_cp, ext_cp, trans_type)
 
@@ -97,8 +153,80 @@ class CarState(CarStateBase):
     # Consume blind-spot monitoring info/warning LED states, if available.
     # Infostufe: BSM LED on, Warnung: BSM LED flashing
     if self.CP.enableBsm:
-      ret.leftBlindspot = bool(ext_cp.vl["SWA_01"]["SWA_Infostufe_SWA_li"]) or bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_li"])
-      ret.rightBlindspot = bool(ext_cp.vl["SWA_01"]["SWA_Infostufe_SWA_re"]) or bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_re"])
+      ret.leftBlindspot = bool(ext_cp.vl["SWA_01"]["SWA_Infostufe_SWA_li"])
+      ret.rightBlindspot = bool(ext_cp.vl["SWA_01"]["SWA_Infostufe_SWA_re"])
+      ret.vagCarState.leftBlindspotWarning = bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_li"])
+      ret.vagCarState.rightBlindspotWarning = bool(ext_cp.vl["SWA_01"]["SWA_Warnung_SWA_re"])
+
+    ret.vagCarState.brakeLights = bool(pt_cp.vl["ESP_05"]["ESP_Status_Bremsdruck"])
+
+    #VAG
+    # ----- Motor_04 -----
+    if self.CP.vagCarParams.vagCanModule.bus1Motor04:
+      ret.vagCarState.vagUiField.moIstgang                  = body_cp.vl["Motor_04"]["MO_Istgang"]
+      ret.vagCarState.vagUiField.moLadedruck                = body_cp.vl["Motor_04"]["MO_Ladedruck"] #0~5.10 Bar
+      ret.vagCarState.vagUiField.moOeldruck                 = body_cp.vl["Motor_04"]["MO_Oeldruck"] #0~10.00 Bar
+    # ----- Motor_07 -----
+    if self.CP.vagCarParams.vagCanModule.bus0Motor07:
+      ret.vagCarState.vagUiField.moAnsaugluftTemp           = pt_cp.vl["Motor_07"]["MO_Ansaugluft_Temp"] #-48~141.75 DegreCelsi
+      ret.vagCarState.vagUiField.moKuehlmittelTemp          = pt_cp.vl["Motor_07"]["MO_Kuehlmittel_Temp"] #-48~141.75 DegreCelsi
+      ret.vagCarState.vagUiField.moOelTemp                  = pt_cp.vl["Motor_07"]["MO_Oel_Temp"] #-60~192 DegreCelsi
+    # ----- Motor_09 -----
+    if self.CP.vagCarParams.vagCanModule.bus1Motor09:
+      ret.vagCarState.vagUiField.moItmKuehlmittelTemp       = body_cp.vl["Motor_09"]["MO_ITM_Kuehlmittel_Temp"] #-45.75~143.25 DegreCelsi
+    # ----- Motor_18 -----
+    if self.CP.vagCarParams.vagCanModule.bus0Motor18:
+      ret.vagCarState.vagUiField.moMaxLadedruck             = pt_cp.vl["Motor_18"]["MO_max_Ladedruck"] #0~6.3 Bar
+    # ----- Motor_20 -----
+    ret.vagCarState.vagUiField.moRelSaugrohrdruck           = pt_cp.vl["Motor_20"]["MO_rel_Saugrohrdruck"] #0~1.116 Bar
+    ret.vagCarState.vagUiField.moRelSaugrohrdruckGemErr     = pt_cp.vl["Motor_20"]["MO_rel_Saugrohrdruck_gem_err"]
+    # ----- Getriebe_11 -----
+    #Pon: For panda jungle develop
+    if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
+      try:
+        ret.vagCarState.vagUiField.geZielgang                 = pt_cp.vl["Getriebe_11"]["GE_Zielgang"]
+      except Exception:
+        print("[BOP][carstate.py] exception to set vagCarState.vagUiField.geZielgang")
+    # ----- Getriebe_14 -----
+    if self.CP.vagCarParams.vagCanModule.bus1Getriebe14:
+      ret.vagCarState.vagUiField.geSumpftemperatur          = body_cp.vl["Getriebe_14"]["GE_Sumpftemperatur"] #-58~196 DegreCelsi
+    # ----- ESP_05 -----
+    ret.vagCarState.vagUiField.espBremsdruck                = pt_cp.vl["ESP_05"]["ESP_Bremsdruck"] #-30~276.6 Bar
+    ret.vagCarState.vagUiField.espBvkUnterdruck             = pt_cp.vl["ESP_05"]["ESP_BKV_Unterdruck"] #0~1.012 Bar
+    # ----- Gateway_72 -----
+    ret.vagCarState.vagUiField.bcm1AussenTempUngef          = pt_cp.vl["Gateway_72"]["BCM1_Aussen_Temp_ungef"] #-50~76.0 DegreCelsi
+    # ----- OBD_01 -----
+    if self.CP.vagCarParams.vagCanModule.bus1Obd01:
+      ret.vagCarState.vagUiField.obdEngCoolTemp             = body_cp.vl["OBD_01"]["OBD_Eng_Cool_Temp"] #-40~215 DegreCelsi
+    # ----- Kombi_02 -----
+    if self.CP.vagCarParams.vagCanModule.bus0Kombi02:
+      ret.vagCarState.vagUiField.kbiAussenTempGef           = pt_cp.vl["Kombi_02"]["KBI_Aussen_Temp_gef"] #-50~75.0 DegreCelsi
+    # ----- ACC_02 -----
+    ret.vagCarState.vagUiField.accAbstandsindex             = ext_cp.vl["ACC_02"]["ACC_Abstandsindex"]
+    # ----- VehicleSpeed -----
+    #Pon: For panda jungle develop
+    if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
+      if self.CP.vagCarParams.vagCanModule.bus1Motor04:
+        try:
+          ret.vagCarState.vagUiField.speed                    = pt_cp.vl["VehicleSpeed"]["Speed"] #Km/H
+        except Exception:
+          print("[BOP][carstate.py] exception to set vagCarState.vagUiField.speed")
+
+    # ----- Motor_12 -----
+    if self.CP.vagCarParams.vagCanModule.bus1Motor12:
+      ret.engineRpm                             = body_cp.vl["Motor_12"]["MO_Drehzahl_01"]
+
+    ##### VAG Force disable startstop #####
+    if self.CP.vagCarParams.vagCanModule.bus0Bcm01:
+      self.bcm_01 = pt_cp.vl["BCM_01"]
+    if self.CP.vagCarParams.vagCanModule.bus0Motor18:
+      self.motor_18 = pt_cp.vl["Motor_18"]
+
+    ##### VAG Driving mode #####
+    if self.CP.vagCarParams.vagCanModule.bus0Charisma01:
+      self.charisma_01 = pt_cp.vl["Charisma_01"]
+    if self.CP.vagCarParams.vagCanModule.bus0Charisma07:
+      self.charisma_07 = pt_cp.vl["Charisma_07"]
 
     # Consume factory LDW data relevant for factory SWA (Lane Change Assist)
     # and capture it for forwarding to the blind spot radar controller
@@ -263,7 +391,27 @@ class CarState(CarStateBase):
     return temp_fault, perm_fault
 
   @staticmethod
-  def get_can_parser(CP):
+  def get_body_can_parser(CP): #can bus 1
+    messages = [
+      # sig_address, frequency
+    ]
+    #VAG
+    #if CP.carFingerprint in (CAR.SKODA_KODIAQ_MK1):
+    if CP.vagCarParams.vagCanModule.bus1Getriebe14:
+      messages += MqbExtraSignals.getriebe_14_message
+    if CP.vagCarParams.vagCanModule.bus1Motor12:
+      messages += MqbExtraSignals.motor_12_message
+    if CP.vagCarParams.vagCanModule.bus1Motor09:
+      messages += MqbExtraSignals.motor_09_message
+    if CP.vagCarParams.vagCanModule.bus1Obd01:
+      messages += MqbExtraSignals.obd_01_message
+    if CP.vagCarParams.vagCanModule.bus1Motor04:
+      messages += MqbExtraSignals.motor_04_message
+
+    return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.body)
+
+  @staticmethod
+  def get_can_parser(CP): #can bus 0
     if CP.flags & VolkswagenFlags.PQ:
       return CarState.get_can_parser_pq(CP)
 
@@ -297,10 +445,27 @@ class CarState(CarStateBase):
       if CP.enableBsm:
         messages += MqbExtraSignals.bsm_radar_messages
 
+    #VAG
+    #if CP.carFingerprint in (CAR.SKODA_KODIAQ_MK1):
+    if CP.vagCarParams.vagCanModule.bus0Motor07:
+      messages += MqbExtraSignals.motor_07_message
+    if CP.vagCarParams.vagCanModule.bus0VehicleSpeed:
+      messages += MqbExtraSignals.vehicle_speed_message
+    if CP.vagCarParams.vagCanModule.bus0Bcm01:
+      messages += MqbExtraSignals.bcm_01_message
+    if CP.vagCarParams.vagCanModule.bus0Kombi02:
+      messages += MqbExtraSignals.kombi_02_message
+    if CP.vagCarParams.vagCanModule.bus0Motor18:
+      messages += MqbExtraSignals.motor_18_message
+    if CP.vagCarParams.vagCanModule.bus0Charisma01:
+      messages += MqbExtraSignals.charisma_01_message
+    if CP.vagCarParams.vagCanModule.bus0Charisma07:
+      messages += MqbExtraSignals.charisma_07_message
+
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.pt)
 
   @staticmethod
-  def get_cam_can_parser(CP):
+  def get_cam_can_parser(CP): #can bus 2
     if CP.flags & VolkswagenFlags.PQ:
       return CarState.get_cam_can_parser_pq(CP)
 
@@ -314,7 +479,7 @@ class CarState(CarStateBase):
     if CP.networkLocation == NetworkLocation.fwdCamera:
       messages += [
         # sig_address, frequency
-        ("LDW_02", 10)      # From R242 Driver assistance camera
+        ("LDW_02", 10),     # From R242 Driver assistance camera
       ]
     else:
       # Radars are here on CANBUS.cam
@@ -385,6 +550,43 @@ class MqbExtraSignals:
   ]
   bsm_radar_messages = [
     ("SWA_01", 20),                              # From J1086 Lane Change Assist
+  ]
+  #VAG
+  motor_07_message = [
+    ("Motor_07", 2),
+  ]
+  vehicle_speed_message = [
+    ("VehicleSpeed", 50),
+  ]
+  bcm_01_message = [
+    ("BCM_01", 1),
+  ]
+  kombi_02_message = [
+    ("Kombi_02", 1),
+  ]
+  motor_18_message = [
+    ("Motor_18", 1),
+  ]
+  charisma_01_message = [
+    ("Charisma_01", 1),
+  ]
+  charisma_07_message = [
+    ("Charisma_07", 1),
+  ]
+  getriebe_14_message = [
+    ("Getriebe_14", 10),
+  ]
+  motor_12_message = [
+    ("Motor_12", 100),
+  ]
+  motor_09_message = [
+    ("Motor_09", 1),
+  ]
+  obd_01_message = [
+    ("OBD_01", 1),
+  ]
+  motor_04_message = [
+    ("Motor_04", 1),
   ]
 
 class PqExtraSignals:
