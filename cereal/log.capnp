@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 using Cxx = import "./include/c++.capnp";
 $Cxx.namespace("cereal");
 
@@ -2314,11 +2320,11 @@ struct Event {
     customReservedRawData2 @126 :Data;
 
     # *********** Custom: reserved for forks ***********
-    customReserved0 @107 :Custom.CustomReserved0;
-    customReserved1 @108 :Custom.CustomReserved1;
-    customReserved2 @109 :Custom.CustomReserved2;
-    customReserved3 @110 :Custom.CustomReserved3;
-    customReserved4 @111 :Custom.CustomReserved4;
+    vagCarState @107 :Custom.VagCarState;
+    vagCarControl @108 :Custom.VagCarControl;
+    vagCarParams @109 :Custom.VagCarParams;
+    vagParam @110 :Custom.VagParam;
+    vagControl @111 :Custom.VagControl;
     customReserved5 @112 :Custom.CustomReserved5;
     customReserved6 @113 :Custom.CustomReserved6;
     customReserved7 @114 :Custom.CustomReserved7;

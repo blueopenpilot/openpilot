@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 from typing import Optional
 
 
@@ -70,6 +76,8 @@ _services: dict[str, tuple] = {
   "qRoadEncodeIdx": (False, 20.),
   "userFlag": (True, 0., 1),
   "microphone": (True, 10., 10),
+  "vagParam": (False, 0.),
+  "vagControl": (True, 100),
 
   # debug
   "uiDebug": (True, 0., 1),

@@ -1,5 +1,13 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 using Cxx = import "./include/c++.capnp";
 $Cxx.namespace("cereal");
+
+using Custom = import "custom.capnp";
 
 @0x8e2af1e708af8b8d;
 
@@ -224,6 +232,9 @@ struct CarState {
   # process meta
   cumLagMs @50 :Float32;
 
+  #VAG
+  vagCarState @51 :Custom.VagCarState;
+
   struct WheelSpeeds {
     # optional wheel speeds
     fl @0 :Float32;
@@ -341,6 +352,9 @@ struct CarControl {
   cruiseControl @4 :CruiseControl;
   hudControl @5 :HUDControl;
 
+  #VAG
+  vagCarControl @17 :Custom.VagCarControl;
+
   struct Actuators {
     # range from 0.0 - 1.0
     gas @0: Float32;
@@ -412,6 +426,13 @@ struct CarControl {
       prompt @6;
       promptRepeat @7;
       promptDistracted @8;
+
+      leftBlindspot @9;
+      rightBlindspot @10;
+      leftBlinker @11;
+      rightBlinker @12;
+      leadCarGoing @13;
+      noLeadCarWarning @14;
     }
   }
 
@@ -504,6 +525,9 @@ struct CarParams {
   networkLocation @50 :NetworkLocation;  # Where Panda/C2 is integrated into the car's CAN network
 
   wheelSpeedFactor @63 :Float32; # Multiplier on wheels speeds to computer actual speeds
+
+  #VAG
+  vagCarParams @74 :Custom.VagCarParams;
 
   struct SafetyConfig {
     safetyModel @0 :SafetyModel;
