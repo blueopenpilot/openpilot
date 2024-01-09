@@ -55,6 +55,8 @@ class Car:
     self.CP.alternativeExperience = 0
     if not self.disengage_on_accelerator:
       self.CP.alternativeExperience |= ALTERNATIVE_EXPERIENCE.DISABLE_DISENGAGE_ON_GAS
+    #Pon FLKA
+    self.CP.alternativeExperience |= ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL
 
     openpilot_enabled_toggle = self.params.get_bool("OpenpilotEnabledToggle")
 

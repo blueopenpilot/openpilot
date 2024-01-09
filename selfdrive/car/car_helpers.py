@@ -205,7 +205,7 @@ def get_car(logcan, sendcan, experimental_long_allowed, num_pandas=1):
     #candidate = "MOCK"
     candidate = "SKODA_KODIAQ_MK1"
 
-  CarInterface, _, _ = interfaces[candidate]
+  CarInterface, CarController, CarState = interfaces[candidate]
   CP = CarInterface.get_params(candidate, fingerprints, car_fw, experimental_long_allowed, docs=False)
   CP.carVin = vin
   CP.carFw = car_fw

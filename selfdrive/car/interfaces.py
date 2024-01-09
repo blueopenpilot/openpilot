@@ -2,6 +2,8 @@ import json
 import os
 import numpy as np
 import tomllib
+import cereal.messaging as messaging
+
 from abc import abstractmethod, ABC
 from enum import StrEnum
 from typing import Any, NamedTuple
@@ -9,6 +11,7 @@ from collections.abc import Callable
 from functools import cache
 
 from cereal import car
+from cereal import custom
 from openpilot.common.basedir import BASEDIR
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.simple_kalman import KF1D, get_kalman_gain
@@ -109,6 +112,7 @@ class CarInterfaceBase(ABC):
 
     dbc_name = "" if self.cp is None else self.cp.dbc_name
     self.CC: CarControllerBase = CarController(dbc_name, CP, self.VM)
+    self.sm = messaging.SubMaster(['vagParam'])
 
   def apply(self, c: car.CarControl, now_nanos: int) -> tuple[car.CarControl.Actuators, list[tuple[int, int, bytes, int]]]:
     return self.CC.update(c, self.CS, now_nanos)
@@ -243,7 +247,11 @@ class CarInterfaceBase(ABC):
     ret = self._update(c)
 
     ret.canValid = all(cp.can_valid for cp in self.can_parsers if cp is not None)
-    ret.canTimeout = any(cp.bus_timeout for cp in self.can_parsers if cp is not None)
+    #Pon: For panda jungle develop
+    if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
+      ret.canTimeout = any(cp.bus_timeout for cp in self.can_parsers if cp is not None)
+    else:
+      ret.canTimeout = False
 
     if ret.vEgoCluster == 0.0 and not self.v_ego_cluster_seen:
       ret.vEgoCluster = ret.vEgo
@@ -324,7 +332,9 @@ class CarInterfaceBase(ABC):
         # if the user overrode recently, show a less harsh alert
         if self.silent_steer_warning or cs_out.standstill or self.steering_unpressed < int(1.5 / DT_CTRL):
           self.silent_steer_warning = True
-          events.add(EventName.steerTempUnavailableSilent)
+          #FLKA TODO
+          #if (not c.latActive and not c.vagCarControl.availableVagFlka):
+          #  events.add(EventName.steerTempUnavailableSilent)
         else:
           events.add(EventName.steerTempUnavailable)
     else:
