@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #pragma once
 
 #include <cstdlib>
@@ -66,6 +72,27 @@ public:
       bl_power_control << (on ? "0" : "4") << "\n";
       bl_power_control.close();
     }
+  }
+
+  static bool get_is_display_power_on() {
+    std::ifstream bl_power_control("/sys/class/backlight/panel0-backlight/bl_power");
+    if (bl_power_control.is_open()) {
+      char c = bl_power_control.get();
+      printf("[PONTEST][%s][%d] bl_power_control=%c \n", __FILE__, __LINE__, c);
+      if (c == '0') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+  static void set_volume(float volume) {
+    volume = util::map_val(volume, 0.f, 1.f, MIN_VOLUME, MAX_VOLUME);
+
+    char volume_str[6];
+    snprintf(volume_str, sizeof(volume_str), "%.3f", volume);
+    std::system(("pactl set-sink-volume @DEFAULT_SINK@ " + std::string(volume_str)).c_str());
   }
 
   static std::map<std::string, std::string> get_init_logs() {
