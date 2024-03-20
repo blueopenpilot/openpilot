@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #include <QApplication>
 #include <QLabel>
 #include <QPushButton>
@@ -31,6 +37,11 @@ int main(int argc, char *argv[]) {
     scroll->verticalScrollBar()->setValue(scroll->verticalScrollBar()->maximum());
   });
 
+  QPushButton *btnGitReset = new QPushButton();
+  btnGitReset->setText(QObject::tr("git reset"));
+  QObject::connect(btnGitReset, &QPushButton::clicked, [=]() {
+    std::system("git reset --hard HEAD~1");
+  });
   QPushButton *btn = new QPushButton();
 #ifdef __aarch64__
   btn->setText(QObject::tr("Reboot"));
@@ -41,6 +52,7 @@ int main(int argc, char *argv[]) {
   btn->setText(QObject::tr("Exit"));
   QObject::connect(btn, &QPushButton::clicked, &a, &QApplication::quit);
 #endif
+  main_layout->addWidget(btnGitReset, 0, 0, Qt::AlignLeft | Qt::AlignBottom);
   main_layout->addWidget(btn, 0, 0, Qt::AlignRight | Qt::AlignBottom);
 
   window.setStyleSheet(R"(
