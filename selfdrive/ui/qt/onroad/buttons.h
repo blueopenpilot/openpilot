@@ -38,4 +38,47 @@ private:
   QPixmap settings_img;
 };
 
+class MonitorOffButton : public QPushButton {
+  Q_OBJECT
+
+public:
+  explicit MonitorOffButton(QWidget *parent = 0);
+
+private:
+  void paintEvent(QPaintEvent *event) override;
+  void ButtonClicked();
+
+  QPixmap monitor_off_img;
+};
+
+class VagHudButton : public QPushButton {
+  Q_OBJECT
+
+public:
+  explicit VagHudButton(QWidget *parent = 0);
+
+private:
+  void paintEvent(QPaintEvent *event) override;
+  void ButtonClicked();
+
+  QPixmap vag_hud_img;
+signals:
+  void openVagHud();
+};
+
+class VagSettingsButton : public QPushButton {
+  Q_OBJECT
+
+public:
+  explicit VagSettingsButton(QWidget *parent = 0);
+
+private:
+  void paintEvent(QPaintEvent *event) override;
+  void ButtonClicked();
+
+  QPixmap vag_settings_img;
+signals:
+  void openVagSettings();
+};
+
 void drawIcon(QPainter &p, const QPoint &center, const QPixmap &img, const QBrush &bg, float opacity);

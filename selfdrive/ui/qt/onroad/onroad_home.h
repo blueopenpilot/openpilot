@@ -23,9 +23,14 @@ private:
   QColor bg = bg_colors[STATUS_DISENGAGED];
   QWidget *map = nullptr;
   QHBoxLayout* split;
+  VagParam* mVagParam;
 
 private slots:
   void offroadTransition(bool offroad);
   void primeChanged(bool prime);
   void updateState(const UIState &s);
+
+signals:
+  void openVagHud();
+  void openVagSettings();
 };

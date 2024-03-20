@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #include "selfdrive/ui/qt/home.h"
 
 #include <QHBoxLayout>
@@ -12,6 +18,7 @@
 #ifdef ENABLE_MAPS
 #include "selfdrive/ui/qt/maps/map_settings.h"
 #endif
+#include "system/hardware/hw.h"
 
 // HomeWindow: the container for the offroad and onroad UIs
 
@@ -23,6 +30,7 @@ HomeWindow::HomeWindow(QWidget* parent) : QWidget(parent) {
   sidebar = new Sidebar(this);
   main_layout->addWidget(sidebar);
   QObject::connect(sidebar, &Sidebar::openSettings, this, &HomeWindow::openSettings);
+  QObject::connect(sidebar, &Sidebar::openVagDebug, this, &HomeWindow::openVagDebug);
 
   slayout = new QStackedLayout();
   main_layout->addLayout(slayout);
@@ -33,6 +41,9 @@ HomeWindow::HomeWindow(QWidget* parent) : QWidget(parent) {
 
   onroad = new OnroadWindow(this);
   QObject::connect(onroad, &OnroadWindow::mapPanelRequested, this, [=] { sidebar->hide(); });
+  QObject::connect(onroad, &OnroadWindow::openVagHud, this, &HomeWindow::openVagHud);
+  QObject::connect(onroad, &OnroadWindow::openVagSettings, this, &HomeWindow::openVagSettings);
+
   slayout->addWidget(onroad);
 
   body = new BodyWindow(this);
@@ -68,12 +79,31 @@ void HomeWindow::updateState(const UIState &s) {
 }
 
 void HomeWindow::offroadTransition(bool offroad) {
-  body->setEnabled(false);
-  sidebar->setVisible(offroad);
-  if (offroad) {
-    slayout->setCurrentWidget(home);
+  const bool isVagParamFromCerealEnabled = (*(uiState())->sm)["vagParam"].getVagParam().getVagParamGeneral().getIsVagParamFromCerealEnabled();
+  bool isVagDevelopOnRoadUi = false;
+  if(isVagParamFromCerealEnabled) {
+    isVagDevelopOnRoadUi = (*(uiState())->sm)["vagParam"].getVagParam().getVagParamGeneral().getIsVagDevelopOnRoadUi();
   } else {
+    try {
+      isVagDevelopOnRoadUi = Params().getBool("IsVagDevelopOnRoadUi");
+    } catch (std::exception &e) {
+      printf("[BOP][%s][%s][%d] Get param exception: %s \n", __FILE__, __FUNCTION__, __LINE__, e.what());
+      isVagDevelopOnRoadUi = false;
+    }
+  }
+
+  if(isVagDevelopOnRoadUi) {
+    //PONTEST
+    //sidebar->setVisible(true);
     slayout->setCurrentWidget(onroad);
+  } else {
+    body->setEnabled(false);
+    sidebar->setVisible(offroad);
+    if (offroad) {
+      slayout->setCurrentWidget(home);
+    } else {
+      slayout->setCurrentWidget(onroad);
+    }
   }
 }
 
@@ -88,9 +118,16 @@ void HomeWindow::showDriverView(bool show) {
 }
 
 void HomeWindow::mousePressEvent(QMouseEvent* e) {
-  // Handle sidebar collapsing
-  if ((onroad->isVisible() || body->isVisible()) && (!sidebar->isVisible() || e->x() > sidebar->width())) {
-    sidebar->setVisible(!sidebar->isVisible() && !onroad->isMapVisible());
+  printf("[BOP][%s][%d] e->x=%d, e->y=%d \n", __FILE__, __LINE__, e->x(), e->y());
+  //monitor on
+  if(!Hardware::get_is_display_power_on()) {
+    printf("[BOP][%s][%d] monitor on \n", __FILE__, __LINE__);
+    Hardware::set_display_power(true);
+  } else {
+    // Handle sidebar collapsing
+    if (onroad->isVisible() && (!sidebar->isVisible() || e->x() > sidebar->width())) {
+      sidebar->setVisible(!sidebar->isVisible() && !onroad->isMapVisible());
+    }
   }
 }
 

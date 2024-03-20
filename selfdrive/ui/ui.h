@@ -45,7 +45,6 @@ constexpr vec3 default_face_kpts_3d[] = {
   {18.02, -49.14, 8.00}, {6.36, -51.20, 8.00}, {-5.98, -51.20, 8.00},
 };
 
-
 typedef enum UIStatus {
   STATUS_DISENGAGED,
   STATUS_OVERRIDE,

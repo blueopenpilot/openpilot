@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #pragma once
 
 #include <string>
@@ -137,6 +143,11 @@ signals:
 
 protected:
   Toggle toggle;
+
+public slots:
+  void setToggleVisible(bool visible) {
+    toggle.setVisible(visible);
+  }
 };
 
 // widget to toggle params
@@ -185,6 +196,15 @@ private:
 
 class ButtonParamControl : public AbstractControl {
   Q_OBJECT
+
+public slots:
+  void valueChangedPrint(int value) {
+    printf("[PONTEST][%s][%d] value=%d \n", __FILE__, __LINE__, value);
+  }
+
+signals:
+  void valueChanged(int value);
+
 public:
   ButtonParamControl(const QString &param, const QString &title, const QString &desc, const QString &icon,
                      const std::vector<QString> &button_texts, const int minimum_button_width = 225) : AbstractControl(title, desc, icon) {
@@ -222,9 +242,14 @@ public:
       hlayout->addWidget(button);
       button_group->addButton(button, i);
     }
+    QObject::connect(this, &ButtonParamControl::valueChanged, this, &ButtonParamControl::valueChangedPrint);
 
-    QObject::connect(button_group, QOverload<int>::of(&QButtonGroup::buttonClicked), [=](int id) {
-      params.put(key, std::to_string(id));
+    QObject::connect(button_group, QOverload<int, bool>::of(&QButtonGroup::buttonToggled), [=](int id, bool checked) {
+      if (checked) {
+        params.put(key, std::to_string(id));
+        printf("[PONTEST][%s][%d] id=%d \n", __FILE__, __LINE__, id);
+        emit valueChanged(id);
+      }
     });
   }
 
@@ -251,6 +276,7 @@ private:
   std::string key;
   Params params;
   QButtonGroup *button_group;
+
 };
 
 class ListWidget : public QWidget {

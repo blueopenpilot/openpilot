@@ -249,6 +249,7 @@ UIState::UIState(QObject *parent) : QObject(parent) {
   sm = std::make_unique<SubMaster, const std::initializer_list<const char *>>({
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState",
     "pandaStates", "carParams", "driverMonitoringState", "carState", "liveLocationKalman", "driverStateV2",
+    "vagParam", "peripheralState", "gpsLocationExternal", "carControl", "vagControl",
     "wideRoadCameraState", "managerState", "navInstruction", "navRoute", "uiPlan", "clocks",
   });
 
@@ -338,6 +339,17 @@ void Device::updateBrightness(const UIState &s) {
   int brightness = brightness_filter.update(clipped_brightness);
   if (!awake) {
     brightness = 0;
+  }
+
+  bool isVagManualOsdBacklightEnable = (*s.sm)["vagParam"].getVagParam().getVagParamSetting().getIsVagManualOsdBacklightEnable();
+  int vagOsdBacklight = 10;
+  vagOsdBacklight = (*s.sm)["vagParam"].getVagParam().getVagParamSetting().getVagOsdBacklight();
+
+  if(isVagManualOsdBacklightEnable) {
+    brightness = vagOsdBacklight*vagOsdBacklight;
+  }
+  else {
+    brightness = (int)(brightness*vagOsdBacklight)/10;
   }
 
   if (brightness != last_brightness) {

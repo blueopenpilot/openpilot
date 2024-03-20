@@ -18,6 +18,8 @@ OnroadWindow::OnroadWindow(QWidget *parent) : QWidget(parent) {
   main_layout->addLayout(stacked_layout);
 
   nvg = new AnnotatedCameraWidget(VISION_STREAM_ROAD, this);
+  QObject::connect(nvg, &AnnotatedCameraWidget::openVagHud, this, &OnroadWindow::openVagHud);
+  QObject::connect(nvg, &AnnotatedCameraWidget::openVagSettings, this, &OnroadWindow::openVagSettings);
 
   QWidget * split_wrapper = new QWidget;
   split = new QHBoxLayout(split_wrapper);
@@ -48,6 +50,9 @@ OnroadWindow::OnroadWindow(QWidget *parent) : QWidget(parent) {
   QObject::connect(uiState(), &UIState::uiUpdate, this, &OnroadWindow::updateState);
   QObject::connect(uiState(), &UIState::offroadTransition, this, &OnroadWindow::offroadTransition);
   QObject::connect(uiState(), &UIState::primeChanged, this, &OnroadWindow::primeChanged);
+
+  mVagParam = VagParam::getInstance();
+  //mVagParam->update();
 }
 
 void OnroadWindow::updateState(const UIState &s) {

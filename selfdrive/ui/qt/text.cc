@@ -42,6 +42,11 @@ int main(int argc, char *argv[]) {
   QObject::connect(btnGitReset, &QPushButton::clicked, [=]() {
     std::system("git reset --hard HEAD~1");
   });
+  QPushButton *btnGitPull = new QPushButton();
+  btnGitPull->setText(QObject::tr("git pull"));
+  QObject::connect(btnGitPull, &QPushButton::clicked, [=]() {
+    std::system("git reset --hard; git pull");
+  });
   QPushButton *btn = new QPushButton();
 #ifdef __aarch64__
   btn->setText(QObject::tr("Reboot"));
@@ -53,6 +58,7 @@ int main(int argc, char *argv[]) {
   QObject::connect(btn, &QPushButton::clicked, &a, &QApplication::quit);
 #endif
   main_layout->addWidget(btnGitReset, 0, 0, Qt::AlignLeft | Qt::AlignBottom);
+  main_layout->addWidget(btnGitPull, 0, 0, Qt::AlignCenter | Qt::AlignBottom);
   main_layout->addWidget(btn, 0, 0, Qt::AlignRight | Qt::AlignBottom);
 
   window.setStyleSheet(R"(

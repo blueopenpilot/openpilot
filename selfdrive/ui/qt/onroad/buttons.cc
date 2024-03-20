@@ -19,7 +19,7 @@ void drawIcon(QPainter &p, const QPoint &center, const QPixmap &img, const QBrus
 ExperimentalButton::ExperimentalButton(QWidget *parent) : experimental_mode(false), engageable(false), QPushButton(parent) {
   setFixedSize(btn_size, btn_size);
 
-  engage_img = loadPixmap("../assets/img_chffr_wheel.png", {img_size, img_size});
+  engage_img = loadPixmap("../assets/comma.png", {img_size, img_size});
   experimental_img = loadPixmap("../assets/img_experimental.svg", {img_size, img_size});
   QObject::connect(this, &QPushButton::clicked, this, &ExperimentalButton::changeMode);
 }
@@ -61,4 +61,68 @@ MapSettingsButton::MapSettingsButton(QWidget *parent) : QPushButton(parent) {
 void MapSettingsButton::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   drawIcon(p, QPoint(btn_size / 2, btn_size / 2), settings_img, QColor(0, 0, 0, 166), isDown() ? 0.6 : 1.0);
+}
+
+
+// MonitorOffButton
+MonitorOffButton::MonitorOffButton(QWidget *parent) : QPushButton(parent) {
+  setFixedSize(btn_size, btn_size);
+  monitor_off_img = loadPixmap("../assets/images/img_monitor_off.png", {img_size, img_size});
+  QObject::connect(this, &QPushButton::clicked, this, &MonitorOffButton::ButtonClicked);
+}
+
+void MonitorOffButton::ButtonClicked() {
+  Hardware::set_display_power(false);
+}
+
+void MonitorOffButton::paintEvent(QPaintEvent *event) {
+  QPainter p(this);
+  p.setRenderHint(QPainter::Antialiasing);
+  p.setOpacity(1.0);
+  p.setPen(Qt::NoPen);
+  p.setOpacity(1.0);
+  p.drawPixmap(QPoint(btn_size/2, btn_size/2) - QPoint(monitor_off_img.width()/2, monitor_off_img.height()/2), monitor_off_img);
+  p.setOpacity(1.0);
+}
+
+// VagHudButton
+VagHudButton::VagHudButton(QWidget *parent) : QPushButton(parent) {
+  setFixedSize(btn_size, btn_size);
+  vag_hud_img = loadPixmap("../assets/images/img_hud.png", {img_size, img_size});
+  QObject::connect(this, &QPushButton::clicked, this, &VagHudButton::ButtonClicked);
+}
+
+void VagHudButton::ButtonClicked() {
+  emit openVagHud();
+}
+
+void VagHudButton::paintEvent(QPaintEvent *event) {
+  QPainter p(this);
+  p.setRenderHint(QPainter::Antialiasing);
+  p.setOpacity(1.0);
+  p.setPen(Qt::NoPen);
+  p.setOpacity(1.0);
+  p.drawPixmap(QPoint(btn_size/2, btn_size/2) - QPoint(vag_hud_img.width()/2, vag_hud_img.height()/2), vag_hud_img);
+  p.setOpacity(1.0);
+}
+
+// VagSettingsButton
+VagSettingsButton::VagSettingsButton(QWidget *parent) : QPushButton(parent) {
+  setFixedSize(btn_size, btn_size);
+  vag_settings_img = loadPixmap("../assets/images/img_settings.png", {img_size, img_size});
+  QObject::connect(this, &QPushButton::clicked, this, &VagSettingsButton::ButtonClicked);
+}
+
+void VagSettingsButton::ButtonClicked() {
+  emit openVagSettings();
+}
+
+void VagSettingsButton::paintEvent(QPaintEvent *event) {
+  QPainter p(this);
+  p.setRenderHint(QPainter::Antialiasing);
+  p.setOpacity(1.0);
+  p.setPen(Qt::NoPen);
+  p.setOpacity(1.0);
+  p.drawPixmap(QPoint(btn_size/2, btn_size/2) - QPoint(vag_settings_img.width()/2, vag_settings_img.height()/2), vag_settings_img);
+  p.setOpacity(1.0);
 }

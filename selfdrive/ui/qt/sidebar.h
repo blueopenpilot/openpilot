@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #pragma once
 
 #include <memory>
@@ -23,6 +29,7 @@ public:
 
 signals:
   void openSettings(int index = 0, const QString &param = "");
+  void openVagDebug();
   void valueChanged();
 
 public slots:

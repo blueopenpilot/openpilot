@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #pragma once
 
 #include <QFrame>
@@ -50,6 +56,12 @@ public:
 signals:
   void openSettings(int index = 0, const QString &param = "");
   void closeSettings();
+  void openVagDebug();
+  void closeVagDebug();
+  void openVagHud();
+  void closeVagHud();
+  void openVagSettings();
+  void closeVagSettings();
 
 public slots:
   void offroadTransition(bool offroad);

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
 
 #include "selfdrive/ui/qt/onroad/annotated_camera.h"
 
@@ -20,10 +25,27 @@ AnnotatedCameraWidget::AnnotatedCameraWidget(VisionStreamType type, QWidget* par
   experimental_btn = new ExperimentalButton(this);
   main_layout->addWidget(experimental_btn, 0, Qt::AlignTop | Qt::AlignRight);
 
+  monitor_off_btn = new MonitorOffButton(this);
+  main_layout->addWidget(monitor_off_btn, 0, Qt::AlignTop | Qt::AlignRight);
+
+  vag_hud_btn = new VagHudButton(this);
+  main_layout->addWidget(vag_hud_btn, 0, Qt::AlignTop | Qt::AlignRight);
+  QObject::connect(vag_hud_btn, &VagHudButton::openVagHud, this, &AnnotatedCameraWidget::openVagHud);
+
+  vag_settings_btn = new VagSettingsButton(this);
+  main_layout->addWidget(vag_settings_btn, 0, Qt::AlignTop | Qt::AlignRight);
+  QObject::connect(vag_settings_btn, &VagSettingsButton::openVagSettings, this, &AnnotatedCameraWidget::openVagSettings);
+
+
   map_settings_btn = new MapSettingsButton(this);
   main_layout->addWidget(map_settings_btn, 0, Qt::AlignBottom | Qt::AlignRight);
 
+  vag_osd = new VagOsd(this);
+
+
   dm_img = loadPixmap("../assets/img_driver_face.png", {img_size + 5, img_size + 5});
+  //vag_hud_img = loadPixmap("../assets/images/img_hud.png", {img_size + 5, img_size + 5});
+  //monitor_off_img = loadPixmap("../assets/images/img_monitor_off.png", {img_size + 5, img_size + 5});
 }
 
 void AnnotatedCameraWidget::updateState(const UIState &s) {
@@ -87,9 +109,9 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   bg.setColorAt(1, QColor::fromRgbF(0, 0, 0, 0));
   p.fillRect(0, 0, width(), UI_HEADER_HEIGHT, bg);
 
-  QString speedLimitStr = (speedLimit > 1) ? QString::number(std::nearbyint(speedLimit)) : "–";
+  QString speedLimitStr = (speedLimit > 1) ? QString::number(std::nearbyint(speedLimit)) : "-";
   QString speedStr = QString::number(std::nearbyint(speed));
-  QString setSpeedStr = is_cruise_set ? QString::number(std::nearbyint(setSpeed)) : "–";
+  QString setSpeedStr = is_cruise_set ? QString::number(std::nearbyint(setSpeed)) : "-";
 
   // Draw outer box + border to contain set speed and speed limit
   const int sign_margin = 12;
@@ -107,7 +129,7 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   int top_radius = 32;
   int bottom_radius = has_eu_speed_limit ? 100 : 32;
 
-  QRect set_speed_rect(QPoint(60 + (default_size.width() - set_speed_size.width()) / 2, 45), set_speed_size);
+  QRect set_speed_rect(QPoint(60 + (default_size.width() - set_speed_size.width()) / 2 - 20, 25), set_speed_size);
   p.setPen(QPen(whiteColor(75), 6));
   p.setBrush(blackColor(166));
   drawRoundedRect(p, set_speed_rect, top_radius, top_radius, bottom_radius, bottom_radius);
@@ -182,6 +204,271 @@ void AnnotatedCameraWidget::drawText(QPainter &p, int x, int y, const QString &t
 
   p.setPen(QColor(0xff, 0xff, 0xff, alpha));
   p.drawText(real_rect.x(), real_rect.bottom(), text);
+}
+
+#define COLOR_BLOCK_SIZE 100
+void AnnotatedCameraWidget::drawOsdText(QPainter &p,
+                        const int x,
+                        const int y,
+                        const int w,
+                        const int h,
+                        const QString &font_string,
+                        const unsigned int font_size,
+                        const QColor color,
+                        const Qt::AlignmentFlag align) {
+  QFont font;
+#ifdef QCOM
+  font.setPointSize(font_size);
+#elif QCOM2
+  font.setPointSize(font_size*4);
+#endif
+  p.setFont(font);
+  p.setPen(color);
+  p.drawText(x, y, w, h, align, font_string);
+}
+
+
+#define COLOR_INFOBOX_BACKGROUND_PURPLE QColor(126, 78, 153, 150) //Purple
+#define COLOR_INFOBOX_BACKGROUND_BLUE QColor(0x17, 0x33, 0x49, 0xc8) //Blue
+
+#define INFO_1_X 0
+#define INFO_1_Y 250
+#define INFO_1_W 350
+#define INFO_1_H 100
+#define INFO_2_X 0
+#define INFO_2_Y INFO_1_Y + INFO_1_H
+#define INFO_2_W 350
+#define INFO_2_H 100
+#define INFO_3_X 0
+#define INFO_3_Y INFO_2_Y + INFO_2_H
+#define INFO_3_W 200
+#define INFO_3_H 100
+#define INFO_4_X 0
+#define INFO_4_Y INFO_3_Y + INFO_3_H
+#define INFO_4_W 350
+#define INFO_4_H 100
+#define INFO_5_X 0
+#define INFO_5_Y INFO_4_Y + INFO_4_H
+#define INFO_5_W 350
+#define INFO_5_H 100
+#define INFO_6_X 0
+#define INFO_6_Y INFO_5_Y + INFO_5_H
+#define INFO_6_W 350
+#define INFO_6_H 100
+#define INFO_7_X 0
+#define INFO_7_Y INFO_6_Y + INFO_6_H
+#define INFO_7_W 350
+#define INFO_7_H 100
+
+void AnnotatedCameraWidget::drawOsdInfobox(QPainter &p) {
+  UIState *s = uiState();
+  const bool isVagParamFromCerealEnabled = (*(uiState())->sm)["vagParam"].getVagParam().getVagParamGeneral().getIsVagParamFromCerealEnabled();
+  bool isVagDevelopOnRoadUi = false;
+  if(isVagParamFromCerealEnabled) {
+    isVagDevelopOnRoadUi = (*(uiState())->sm)["vagParam"].getVagParam().getVagParamGeneral().getIsVagDevelopOnRoadUi();
+  } else {
+    try {
+      isVagDevelopOnRoadUi = Params().getBool("IsVagDevelopOnRoadUi");
+    } catch (std::exception &e) {
+      printf("[BOP][%s][%s][%d] Get param exception: %s \n", __FILE__, __FUNCTION__, __LINE__, e.what());
+      isVagDevelopOnRoadUi = false;
+    }
+  }
+  QColor infoboxBackgroupColor = COLOR_INFOBOX_BACKGROUND_BLUE;
+  if(isVagDevelopOnRoadUi) {
+    infoboxBackgroupColor = COLOR_INFOBOX_BACKGROUND_PURPLE;
+  }
+
+  //----- Steer angle/FLKA -----
+  QPainterPath steeringAngleDegPath;
+  steeringAngleDegPath.moveTo(INFO_1_X, INFO_1_Y);
+  steeringAngleDegPath.lineTo(INFO_1_X, INFO_1_Y + INFO_1_H);
+  steeringAngleDegPath.lineTo(INFO_1_W + INFO_1_H / 2, INFO_1_Y + INFO_1_H);
+  steeringAngleDegPath.lineTo(INFO_1_W + INFO_1_H / 2, INFO_1_Y + INFO_1_H /2);
+  steeringAngleDegPath.lineTo(INFO_1_W, INFO_1_Y);
+  steeringAngleDegPath.closeSubpath();
+  p.fillPath(steeringAngleDegPath, infoboxBackgroupColor);
+
+  const float steeringAngleDeg = (*s->sm)["carState"].getCarState().getSteeringAngleDeg();
+  const bool steeringPressed = (*s->sm)["carState"].getCarState().getSteeringPressed();
+  const bool availableVagFlka = (*s->sm)["carControl"].getCarControl().getVagCarControl().getAvailableVagFlka();
+  const bool controlsAllowed = (*s->sm)["pandaStates"].getPandaStates()[0].getControlsAllowed();
+  char steeringAngleDegBuffer[100];
+
+  if(steeringPressed) {
+    snprintf(steeringAngleDegBuffer, sizeof(steeringAngleDegBuffer), " User: %1.2f", steeringAngleDeg);
+    drawOsdText(p, INFO_1_X, INFO_1_Y, INFO_1_W, INFO_1_H, steeringAngleDegBuffer, 10, COLOR_YELLOW, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+  } else if(availableVagFlka && controlsAllowed) {
+    snprintf(steeringAngleDegBuffer, sizeof(steeringAngleDegBuffer), " FLKA: %1.2f", steeringAngleDeg);
+    drawOsdText(p, INFO_1_X, INFO_1_Y, INFO_1_W, INFO_1_H, steeringAngleDegBuffer, 10, COLOR_GREEN, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+  } else {
+    snprintf(steeringAngleDegBuffer, sizeof(steeringAngleDegBuffer), " Steer: %1.2f", steeringAngleDeg);
+    drawOsdText(p, INFO_1_X, INFO_1_Y, INFO_1_W, INFO_1_H, steeringAngleDegBuffer, 10, COLOR_WHITE, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+  }
+  //----- Gas/Brake -----
+  QPainterPath gasBrakePath;
+  gasBrakePath.moveTo(INFO_2_X, INFO_2_Y);
+  gasBrakePath.lineTo(INFO_2_X, INFO_2_Y + INFO_2_H);
+  gasBrakePath.lineTo(INFO_2_W + INFO_2_H / 2, INFO_2_Y + INFO_2_H);
+  gasBrakePath.lineTo(INFO_2_W + INFO_2_H / 2, INFO_2_Y + INFO_2_H / 2);
+  gasBrakePath.lineTo(INFO_2_W, INFO_2_Y);
+  gasBrakePath.closeSubpath();
+  p.fillPath(gasBrakePath, infoboxBackgroupColor);
+
+  const int gas = (int)((*s->sm)["carState"].getCarState().getGas() * 100);
+  const int brake = (int)((*s->sm)["carState"].getCarState().getBrake() * 200);
+
+  if(gas > 0) {
+    char gasBrakeBuffer[100];
+    snprintf(gasBrakeBuffer, sizeof(gasBrakeBuffer), " Gas: %d%%", gas);
+    drawOsdText(p, INFO_2_X, INFO_2_Y, INFO_2_W, INFO_2_H, gasBrakeBuffer, 10, COLOR_GREEN, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+  } else if(brake > 0) {
+    char gasBrakeBuffer[100];
+    snprintf(gasBrakeBuffer, sizeof(gasBrakeBuffer), " Brake: %d%%", brake);
+    drawOsdText(p, INFO_2_X, INFO_2_Y, INFO_2_W, INFO_2_H, gasBrakeBuffer, 10, COLOR_RED, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+  } else {
+    char gasBrakeBuffer[100];
+    snprintf(gasBrakeBuffer, sizeof(gasBrakeBuffer), " Gas/Brake:");
+    drawOsdText(p, INFO_2_X, INFO_2_Y, INFO_2_W, INFO_2_H, gasBrakeBuffer, 10, COLOR_WHITE, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+  }
+
+  //----- Voltage -----
+  float voltage = 0;
+  const int voltageInt = (int)(*s->sm)["peripheralState"].getPeripheralState().getVoltage();
+  voltage = (float)voltageInt/1000;
+  QPainterPath voltagePath;
+  voltagePath.moveTo(INFO_3_X, INFO_3_Y);
+  voltagePath.lineTo(INFO_3_X, INFO_3_Y + INFO_3_H);
+  voltagePath.lineTo(INFO_3_W + INFO_3_H / 2, INFO_3_Y + INFO_3_H);
+  voltagePath.lineTo(INFO_3_W + INFO_3_H / 2, INFO_3_Y + INFO_3_H / 2);
+  voltagePath.lineTo(INFO_3_W,  INFO_3_Y);
+  voltagePath.closeSubpath();
+  p.fillPath(voltagePath, infoboxBackgroupColor);
+  char voltageBuffer[100];
+  snprintf(voltageBuffer, sizeof(voltageBuffer), " %2.1f V", voltage);
+  drawOsdText(p, INFO_3_X, INFO_3_Y, INFO_3_W, INFO_3_H, voltageBuffer, 10, COLOR_WHITE, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+
+  //----- Gearbox Sumpf Temperature -----
+  QPainterPath gearboxSumpfTemperaturePath;
+  gearboxSumpfTemperaturePath.moveTo(INFO_4_X, INFO_4_Y);
+  gearboxSumpfTemperaturePath.lineTo(INFO_4_X, INFO_4_Y + INFO_4_H);
+  gearboxSumpfTemperaturePath.lineTo(INFO_4_W + INFO_4_H / 2, INFO_4_Y + INFO_4_H);
+  gearboxSumpfTemperaturePath.lineTo(INFO_4_W + INFO_4_H / 2, INFO_4_Y + INFO_4_H / 2);
+  gearboxSumpfTemperaturePath.lineTo(INFO_4_W, INFO_4_Y);
+  gearboxSumpfTemperaturePath.closeSubpath();
+  p.fillPath(gearboxSumpfTemperaturePath, infoboxBackgroupColor);
+
+  const int geSumpftemperatur = (*s->sm)["carState"].getCarState().getVagCarState().getVagUiField().getGeSumpftemperatur();
+
+  char gearboxSumpfTemperatureBuffer[100];
+  snprintf(gearboxSumpfTemperatureBuffer, sizeof(gearboxSumpfTemperatureBuffer), " G.S.T: %3d", geSumpftemperatur);
+  drawOsdText(p, INFO_4_X, INFO_4_Y, INFO_4_W, INFO_4_H, gearboxSumpfTemperatureBuffer, 10, COLOR_WHITE, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+
+  //----- Engine Coolant Temperature -----
+  QPainterPath engineCoolantTemperaturePath;
+  engineCoolantTemperaturePath.moveTo(INFO_5_X, INFO_5_Y);
+  engineCoolantTemperaturePath.lineTo(INFO_5_X, INFO_5_Y + INFO_5_H);
+  engineCoolantTemperaturePath.lineTo(INFO_5_W + INFO_5_H / 2, INFO_5_Y + INFO_5_H);
+  engineCoolantTemperaturePath.lineTo(INFO_5_W + INFO_5_H / 2, INFO_5_Y + INFO_5_H / 2);
+  engineCoolantTemperaturePath.lineTo(INFO_5_W, INFO_5_Y);
+  engineCoolantTemperaturePath.closeSubpath();
+  p.fillPath(engineCoolantTemperaturePath, infoboxBackgroupColor);
+
+  const float moItmKuehlmittelTemp = (*s->sm)["carState"].getCarState().getVagCarState().getVagUiField().getObdEngCoolTemp();
+
+  char engineCoolantTemperatureBuffer[100];
+  snprintf(engineCoolantTemperatureBuffer, sizeof(engineCoolantTemperatureBuffer), " E.C.T: %3.0f ", moItmKuehlmittelTemp);
+  drawOsdText(p, INFO_5_X, INFO_5_Y, INFO_5_W, INFO_5_H, engineCoolantTemperatureBuffer, 10, COLOR_WHITE, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+
+  //----- Engine Oil Temperature -----
+  QPainterPath engineOilTemperaturePath;
+  engineOilTemperaturePath.moveTo(INFO_6_X, INFO_6_Y);
+  engineOilTemperaturePath.lineTo(INFO_6_X, INFO_6_Y + INFO_6_H);
+  engineOilTemperaturePath.lineTo(INFO_6_W + INFO_6_H / 2, INFO_6_Y + INFO_6_H);
+  engineOilTemperaturePath.lineTo(INFO_6_W + INFO_6_H / 2, INFO_6_Y + INFO_6_H / 2);
+  engineOilTemperaturePath.lineTo(INFO_6_W, INFO_6_Y);
+  engineOilTemperaturePath.closeSubpath();
+  p.fillPath(engineOilTemperaturePath, infoboxBackgroupColor);
+
+  const int moOelTemp = (*s->sm)["carState"].getCarState().getVagCarState().getVagUiField().getMoOelTemp();
+
+  char engineOilTemperatureBuffer[100];
+  snprintf(engineOilTemperatureBuffer, sizeof(engineOilTemperatureBuffer), " E.O.T: %3d ", moOelTemp);
+  drawOsdText(p, INFO_6_X, INFO_6_Y, INFO_6_W, INFO_6_H, engineOilTemperatureBuffer, 10, COLOR_WHITE, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+
+//----- Engine InAir Temperature -----
+  QPainterPath engineInAirTemperaturePath;
+  engineInAirTemperaturePath.moveTo(INFO_7_X, INFO_7_Y);
+  engineInAirTemperaturePath.lineTo(INFO_7_X, INFO_7_Y + INFO_7_H);
+  engineInAirTemperaturePath.lineTo(INFO_7_W + INFO_7_H / 2, INFO_7_Y + INFO_7_H);
+  engineInAirTemperaturePath.lineTo(INFO_7_W + INFO_7_H / 2, INFO_7_Y + INFO_7_H / 2);
+  engineInAirTemperaturePath.lineTo(INFO_7_W, INFO_7_Y);
+  engineInAirTemperaturePath.closeSubpath();
+  p.fillPath(engineInAirTemperaturePath, infoboxBackgroupColor);
+
+  const int moAnsaugluftTemp = (*s->sm)["carState"].getCarState().getVagCarState().getVagUiField().getMoAnsaugluftTemp();
+
+  char engineInAirTemperatureBuffer[100];
+  snprintf(engineInAirTemperatureBuffer, sizeof(engineInAirTemperatureBuffer), " E.I.T: %3d ", moAnsaugluftTemp);
+  drawOsdText(p, INFO_7_X, INFO_7_Y, INFO_7_W, INFO_7_H, engineInAirTemperatureBuffer, 10, COLOR_WHITE, (Qt::AlignmentFlag)(ALIGN_VCENTER+ALIGN_LEFT));
+}
+
+
+void AnnotatedCameraWidget::drawOsdCircle(QPainter &p) {
+  //printf("[BOP][%s][%s][%d] \n", __FILE__, __FUNCTION__, __LINE__);
+  UIState *s = uiState();
+
+  const bool isVagFulltimeLkaEnabled = (*s->sm)["vagParam"].getVagParam().getVagParamFeature().getIsVagFulltimeLkaEnabled();
+  //const bool isVagFulltimeLkaEnableWithBlinker = (*s->sm)["vagParam"].getVagParam().getVagParamFeature().getIsVagFulltimeLkaEnableWithBlinker();
+  //const bool isVagFulltimeLkaEnableWithBrake = (*s->sm)["vagParam"].getVagParam().getVagParamFeature().getIsVagFulltimeLkaEnableWithBrake();
+  const bool available = (*s->sm)["carState"].getCarState().getCruiseState().getAvailable();
+  const bool steeringPressed = (*s->sm)["carState"].getCarState().getSteeringPressed();
+  //const bool controlsAllowed = (*s->sm)["pandaStates"].getPandaStates()[0].getControlsAllowed();
+  const bool ignitionLine = (*s->sm)["pandaStates"].getPandaStates()[0].getIgnitionLine();
+  //printf("[BOP][%s][%s][%d] isVagFulltimeLkaEnabled=%d \n", __FILE__, __FUNCTION__, __LINE__, isVagFulltimeLkaEnabled);
+  //printf("[BOP][%s][%s][%d] available=%d \n", __FILE__, __FUNCTION__, __LINE__, available);
+  //printf("[BOP][%s][%s][%d] steeringPressed=%d \n", __FILE__, __FUNCTION__, __LINE__, steeringPressed);
+  //printf("[BOP][%s][%s][%d] controlsAllowed=%d \n", __FILE__, __FUNCTION__, __LINE__, controlsAllowed);
+  //printf("[BOP][%s][%s][%d] ignitionLine=%d \n", __FILE__, __FUNCTION__, __LINE__, ignitionLine);
+
+  int x = 860;
+  int y = 0;
+  QPixmap steering_img = QPixmap("../assets/img_chffr_wheel.png").scaled(img_size, img_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+  p.setPen(Qt::NoPen);
+  if(isVagFulltimeLkaEnabled) {
+    if(available) {
+      if(!ignitionLine) {
+        p.setBrush(COLOR_RED_ALPHA(0xF1));
+      } else {
+        if(steeringPressed) {
+          p.setBrush(COLOR_YELLOW_ALPHA(0xF1));
+        } else {
+          p.setBrush(QColor(0x17, 0x86, 0x44, 0xF1));
+        }
+      }
+    } else {
+      p.setBrush(QColor(0x17, 0x33, 0x49, 0xC8));
+    }
+  } else {
+    p.setBrush(COLOR_BLACK_ALPHA(0xF1));
+  }
+
+  p.drawEllipse(x - radius - 220, y + 30, radius + 10, radius + 10);
+  p.setOpacity(1.0);
+  p.drawPixmap(x - 400 + 18, y + 30 + 18, img_size + 10, img_size + 10, steering_img);
+}
+
+void AnnotatedCameraWidget::drawOsd(QPainter &p) {
+  UIState *s = uiState();
+  
+  const bool isVagInfoBoxEnabled = (*s->sm)["vagParam"].getVagParam().getVagParamSetting().getIsVagInfoBoxEnabled();
+  if(isVagInfoBoxEnabled) {
+    drawOsdInfobox(p);
+  }
+
+  drawOsdCircle(p);
+
 }
 
 void AnnotatedCameraWidget::initializeGL() {
@@ -278,11 +565,17 @@ void AnnotatedCameraWidget::drawDriverState(QPainter &painter, const UIState *s)
   painter.save();
 
   // base icon
-  int offset = UI_BORDER_SIZE + btn_size / 2;
-  int x = rightHandDM ? width() - offset : offset;
-  int y = height() - offset;
+  //int offset = UI_BORDER_SIZE + btn_size / 2;
+  //int x = rightHandDM ? width() - offset : offset;
+  //int y = height() - offset;
+  //int x = 1580;
+  int x = 340;
+  int y = 120;
   float opacity = dmActive ? 0.65 : 0.2;
   drawIcon(painter, QPoint(x, y), dm_img, blackColor(70), opacity);
+  //drawIcon(painter, QPoint(width()-350, y), vag_hud_img, blackColor(70), 1);
+  //drawIcon(painter, QPoint(width()-600, y), monitor_off_img, blackColor(70), 1);
+
 
   // face
   QPointF face_kpts_draw[std::size(default_face_kpts_3d)];
@@ -402,7 +695,30 @@ void AnnotatedCameraWidget::paintGL() {
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
 
-  if (s->scene.world_objects_visible) {
+  const bool isVagParamFromCerealEnabled = (*(uiState())->sm)["vagParam"].getVagParam().getVagParamGeneral().getIsVagParamFromCerealEnabled();
+  bool isVagDevelopOnRoadUi = false;
+  bool isVagLeadCarEnabled = false;
+  if(isVagParamFromCerealEnabled) {
+    isVagDevelopOnRoadUi = (*(uiState())->sm)["vagParam"].getVagParam().getVagParamGeneral().getIsVagDevelopOnRoadUi();
+  } else {
+    try {
+      isVagDevelopOnRoadUi = Params().getBool("IsVagDevelopOnRoadUi");
+    } catch (std::exception &e) {
+      printf("[BOP][%s][%s][%d] Get param exception: %s \n", __FILE__, __FUNCTION__, __LINE__, e.what());
+      isVagDevelopOnRoadUi = false;
+    }
+  }
+  if(isVagParamFromCerealEnabled) {
+    isVagLeadCarEnabled = (*(uiState())->sm)["vagParam"].getVagParam().getVagParamSetting().getIsVagLeadCarEnabled();
+  } else {
+    try {
+      isVagLeadCarEnabled = Params().getBool("IsVagLeadCarEnabled");
+    } catch (std::exception &e) {
+      printf("[BOP][%s][%s][%d] Get param exception: %s \n", __FILE__, __FUNCTION__, __LINE__, e.what());
+      isVagLeadCarEnabled = false;
+    }
+  }
+  if (s->scene.world_objects_visible || isVagDevelopOnRoadUi) {
     update_model(s, model, sm["uiPlan"].getUiPlan());
     drawLaneLines(painter, s);
 
@@ -420,13 +736,20 @@ void AnnotatedCameraWidget::paintGL() {
     }
   }
 
-  // DMoji
-  if (!hideBottomIcons && (sm.rcv_frame("driverStateV2") > s->scene.started_frame)) {
-    update_dmonitoring(s, sm["driverStateV2"].getDriverStateV2(), dm_fade_state, rightHandDM);
+
+  if (isVagDevelopOnRoadUi) {
     drawDriverState(painter, s);
+  } else {
+    // DMoji
+    if (!hideBottomIcons && (sm.rcv_frame("driverStateV2") > s->scene.started_frame)) {
+      update_dmonitoring(s, sm["driverStateV2"].getDriverStateV2(), dm_fade_state, rightHandDM);
+      drawDriverState(painter, s);
+    }
   }
 
   drawHud(painter);
+  drawOsd(painter);
+  vag_osd->drawOsd(painter);
 
   double cur_draw_t = millis_since_boot();
   double dt = cur_draw_t - prev_draw_t;

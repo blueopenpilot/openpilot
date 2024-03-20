@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #include "selfdrive/ui/qt/sidebar.h"
 
 #include <QMouseEvent>
@@ -41,26 +47,47 @@ Sidebar::Sidebar(QWidget *parent) : QFrame(parent), onroad(false), flag_pressed(
 }
 
 void Sidebar::mousePressEvent(QMouseEvent *event) {
-  if (onroad && home_btn.contains(event->pos())) {
-    flag_pressed = true;
-    update();
-  } else if (settings_btn.contains(event->pos())) {
-    settings_pressed = true;
-    update();
+  //monitor on
+  if(!Hardware::get_is_display_power_on()) {
+    printf("[PONTEST][%s][%d] monitor on \n", __FILE__, __LINE__);
+    Hardware::set_display_power(true);
+  } else {
+    if (onroad && home_btn.contains(event->pos())) {
+      flag_pressed = true;
+      update();
+    } else if (settings_btn.contains(event->pos())) {
+      settings_pressed = true;
+      update();
+    }
   }
 }
 
+static int DebugModeCount = 0;
 void Sidebar::mouseReleaseEvent(QMouseEvent *event) {
+  printf("[PONTEST][%s][%d] event->x=%d, event->y=%d \n", __FILE__, __LINE__, event->x(), event->y());
+
+  UIState *s = uiState();
+  const bool isVagDevelopModeEnabled = (*s->sm)["vagParam"].getVagParam().getVagParamGeneral().getIsVagDevelopModeEnabled();
   if (flag_pressed || settings_pressed) {
     flag_pressed = settings_pressed = false;
     update();
   }
-  if (onroad && home_btn.contains(event->pos())) {
+  if (home_btn.contains(event->pos())) {
+    printf("[BOP][%s][%d][%s()] home_btn \n", __FILE__, __LINE__, __FUNCTION__);
+    if (DebugModeCount > 5 || isVagDevelopModeEnabled) {
+      printf("[BOP][%s][%d][%s()] debug \n", __FILE__, __LINE__, __FUNCTION__);
+      DebugModeCount = 0;
+      emit openVagDebug();
+    } else {
+      DebugModeCount++;
+    }
     MessageBuilder msg;
     msg.initEvent().initUserFlag();
     pm->send("userFlag", msg);
   } else if (settings_btn.contains(event->pos())) {
+    printf("[BOP][%s][%d][%s()] settings_btn \n", __FILE__, __LINE__, __FUNCTION__);
     emit openSettings();
+    DebugModeCount = 0;
   }
 }
 

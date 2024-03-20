@@ -104,8 +104,17 @@ void sigTermHandler(int s) {
 }
 
 void initApp(int argc, char *argv[], bool disable_hidpi) {
+  //VagParam is not ready at init time
+  int VagOsdBacklight = 10;
+  try {
+    VagOsdBacklight = std::stoi(Params().get("VagOsdBacklight"));
+  } catch (std::exception &e) {
+    printf("[BOP][%s][%d][%s()][VagOsdBacklight] Get param exception: %s \n", __FILE__, __LINE__, __FUNCTION__, e.what());
+    VagOsdBacklight = 10;
+  }
+
   Hardware::set_display_power(true);
-  Hardware::set_brightness(65);
+  Hardware::set_brightness(VagOsdBacklight*VagOsdBacklight);
 
   // setup signal handlers to exit gracefully
   std::signal(SIGINT, sigTermHandler);
