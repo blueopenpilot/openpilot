@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 from cereal import car
 from panda import Panda
 from openpilot.common.conversions import Conversions as CV
@@ -52,6 +58,10 @@ class CarInterface(CarInterfaceBase):
 
     else:
       # Set global MQB parameters
+      print("[BOP][interface.py][_get_params] fingerprint[0]=", fingerprint[0])
+      print("[BOP][interface.py][_get_params] fingerprint[1]=", fingerprint[1])
+      print("[BOP][interface.py][_get_params] fingerprint[2]=", fingerprint[2])
+
       ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.volkswagen)]
       ret.enableBsm = 0x30F in fingerprint[0]  # SWA_01
 
@@ -66,6 +76,22 @@ class CarInterface(CarInterfaceBase):
         ret.networkLocation = NetworkLocation.gateway
       else:
         ret.networkLocation = NetworkLocation.fwdCamera
+
+      #VAG
+      #===== Bus 0 =====
+      ret.vagCanModule.bus0Motor07 = 1600 in fingerprint[0]
+      ret.vagCanModule.bus0VehicleSpeed = 286 in fingerprint[0]
+      ret.vagCanModule.bus0Bcm01 = 1626 in fingerprint[0]
+      ret.vagCanModule.bus0Kombi02 = 1719 in fingerprint[0]
+      ret.vagCanModule.bus0Motor18 = 1648 in fingerprint[0]
+      ret.vagCanModule.bus0Charisma01 = 901 in fingerprint[0]
+      ret.vagCanModule.bus0Charisma07 = 1000 in fingerprint[0]
+      #===== Bus 1 =====
+      ret.vagCanModule.bus1Getriebe14 = 968 in fingerprint[1]
+      ret.vagCanModule.bus1Motor12 = 168 in fingerprint[1]
+      ret.vagCanModule.bus1Motor09 = 1607 in fingerprint[1]
+      ret.vagCanModule.bus1Obd01 = 913 in fingerprint[1]
+      ret.vagCanModule.bus1Motor04 = 263 in fingerprint[1]
 
     # Global lateral tuning defaults, can be overridden per-vehicle
 
@@ -201,7 +227,7 @@ class CarInterface(CarInterfaceBase):
       ret.wheelbase = 2.66
 
     elif candidate == CAR.SKODA_KODIAQ_MK1:
-      ret.mass = 1569
+      ret.mass = 1738
       ret.wheelbase = 2.79
 
     elif candidate == CAR.SKODA_OCTAVIA_MK3:
@@ -225,7 +251,7 @@ class CarInterface(CarInterfaceBase):
 
   # returns a car.CarState
   def _update(self, c):
-    ret = self.CS.update(self.cp, self.cp_cam, self.cp_ext, self.CP.transmissionType)
+    ret = self.CS.update(self.cp, self.cp_cam, self.cp_ext, self.cp_body, self.CP.transmissionType)
 
     events = self.create_common_events(ret, extra_gears=[GearShifter.eco, GearShifter.sport, GearShifter.manumatic],
                                        pcm_enable=not self.CS.CP.openpilotLongitudinalControl,

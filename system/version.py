@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import os
 import subprocess
 from typing import List, Optional
@@ -7,7 +13,7 @@ from functools import lru_cache
 from openpilot.common.basedir import BASEDIR
 from openpilot.system.swaglog import cloudlog
 
-RELEASE_BRANCHES = ['release3-staging', 'dashcam3-staging', 'release3', 'dashcam3', 'nightly']
+RELEASE_BRANCHES = ['release3-staging', 'dashcam3-staging', 'release3', 'dashcam3', 'nightly', 'c3']
 TESTED_BRANCHES = RELEASE_BRANCHES + ['devel', 'devel-staging']
 
 training_version: bytes = b"0.2.0"
@@ -90,7 +96,7 @@ def is_comma_remote() -> bool:
   if origin is None:
     return False
 
-  return origin.startswith(('git@github.com:commaai', 'https://github.com/commaai'))
+  return origin.startswith(('bluetulippon@github.com:bluetulippon', 'https://github.com/bluetulippon'))
 
 
 @cache

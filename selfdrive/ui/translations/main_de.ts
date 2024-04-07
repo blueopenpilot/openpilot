@@ -102,6 +102,17 @@
     </message>
 </context>
 <context>
+    <name>DebugTestPanel</name>
+    <message>
+        <source>Are you sure you want to reset calibration?</source>
+        <translation type="obsolete">Bist du sicher, dass du die Kalibrierung zurücksetzen möchtest?</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="obsolete">Zurücksetzen</translation>
+    </message>
+</context>
+<context>
     <name>DeclinePage</name>
     <message>
         <source>You must accept the Terms and Conditions in order to use openpilot.</source>
@@ -543,7 +554,7 @@
     </message>
     <message>
         <source>openpilot</source>
-        <translation>openpilot</translation>
+        <translation type="vanished">openpilot</translation>
     </message>
     <message numerus="yes">
         <source>%n minute(s) ago</source>
@@ -581,6 +592,18 @@
     <message>
         <source>ft</source>
         <translation>fuß</translation>
+    </message>
+    <message>
+        <source>git reset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>BOP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>git pull</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -627,7 +650,7 @@ This may take up to a minute.</source>
     <name>SettingsWindow</name>
     <message>
         <source>×</source>
-        <translation>x</translation>
+        <translation type="vanished">x</translation>
     </message>
     <message>
         <source>Device</source>
@@ -644,6 +667,10 @@ This may take up to a minute.</source>
     <message>
         <source>Software</source>
         <translation>Software</translation>
+    </message>
+    <message>
+        <source>X</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1143,6 +1170,402 @@ This may take up to a minute.</source>
     <message>
         <source>Update failed</source>
         <translation>Aktualisierung fehlgeschlagen</translation>
+    </message>
+</context>
+<context>
+    <name>VagDebugWindow</name>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OSD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Feature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VagFeaturePanel</name>
+    <message>
+        <source>Enable Blindspot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show blindspot on the view screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable Blindspot info sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play blindspot info sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable Blindspot info vibrator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play blindspot info vibrator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable Blindspot warning sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play blindspot warning sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable Blindspot warning vibrator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Play blindspot warning vibrator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable vibrator with FLKA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Vibration may cause lower FLKA limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Fulltime LKA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fulltime enable LKA without ACC engaged</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable Fulltime LKA with blinker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Fulltime LKA with blinker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable Fulltime LKA with brake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Fulltime LKA with brake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable Fulltime LKA with Assistant</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Fulltime LKA with Assistant</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Lead car going remind</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Lead car going remind (base on acc ready state)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable Lead car going remind sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Lead car going remind sound (base on acc ready state)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable No lead car warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Enable No lead car warning sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable No lead car warning sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force disable startstop</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VagGeneralPanel</name>
+    <message>
+        <source>Enable develop mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable on road screen for develop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable running process log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable left blinker sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable right blinker sound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset Calibration</source>
+        <translation type="unfinished">Neu kalibrieren</translation>
+    </message>
+    <message>
+        <source>RESET</source>
+        <translation type="unfinished">RESET</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to reset calibration?</source>
+        <translation type="unfinished">Bist du sicher, dass du die Kalibrierung zurücksetzen möchtest?</translation>
+    </message>
+    <message>
+        <source>Reset</source>
+        <translation type="unfinished">Zurücksetzen</translation>
+    </message>
+</context>
+<context>
+    <name>VagOsdPanel</name>
+    <message>
+        <source>Info Box OSD test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Infobar OSD test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blinker OSD test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blindspot Info OSD test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Blindspot Warning OSD test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Brake Light test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lear Car Going Remind test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Lead Car Warning test</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VagSettingPanel</name>
+    <message>
+        <source>  Volume   </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable manual OSD Backlight</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Backlight</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Info Box</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show info box on the screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Blinker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show blinker on the screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Brake Light</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show brake light on the view screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Lead Car</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show lead car on the view screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable manual sound volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VagSettingsWindow</name>
+    <message>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Feature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network</source>
+        <translation type="unfinished">Netzwerk</translation>
+    </message>
+</context>
+<context>
+    <name>VagTestPanel</name>
+    <message>
+        <source>Enable OSD test text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debug Item 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debug Item 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debug Item 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debug Item 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debug Item 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Dynamic DCC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable driving mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Eco</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Normal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sport</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Race</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>VAG driving mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>driving mode clone from Kodiaq with DCC</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VagWarningPanel</name>
+    <message>
+        <source>Turbo pressure warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Engine pressure warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Engine in air warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Engine coolant temperature warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Engine oil temperature warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Coolant temperature warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Engine air pressure warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Gear oil temperature warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Brake pressure warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indoor temperature warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Outdoor temperature warning</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -1,10 +1,29 @@
-def create_steering_control(packer, bus, apply_steer, lkas_enabled):
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
+from cereal import car
+
+def create_steering_control(packer, bus, apply_steer, lkas_enabled, vibrator_enable):
+  if vibrator_enable == 2:
+    vibratorFreq = 0xF
+    vibratorAmp = 0x3
+  elif vibrator_enable == 1:
+    vibratorFreq = 0x7
+    vibratorAmp = 0x1
+  else:
+    vibratorFreq = 0x3
+    vibratorAmp = 0x0
+
   values = {
-    "HCA_01_Status_HCA": 5 if lkas_enabled else 3,
+    "HCA_01_Status_HCA": 5 if (lkas_enabled or vibrator_enable) else 3,
     "HCA_01_LM_Offset": abs(apply_steer),
     "HCA_01_LM_OffSign": 1 if apply_steer < 0 else 0,
-    "HCA_01_Vib_Freq": 18,
-    "HCA_01_Sendestatus": 1 if lkas_enabled else 0,
+    "HCA_01_Vib_Freq": vibratorFreq if vibrator_enable else 18,
+    "HCA_01_Sendestatus": 1 if (lkas_enabled or vibrator_enable) else 0,
+    "HCA_01_Vib_Amp": vibratorAmp if vibrator_enable else 0,
     "EA_ACC_Wunschgeschwindigkeit": 327.36,
   }
   return packer.make_can_msg("HCA_01", bus, values)
@@ -117,3 +136,122 @@ def create_acc_hud_control(packer, bus, acc_hud_status, set_speed, lead_distance
   }
 
   return packer.make_can_msg("ACC_02", bus, values)
+
+
+def create_bcm_01_control(packer, bus, bcm_01_value, disableVagStartStop):
+  values = bcm_01_value
+
+  values.update({
+    "BCM_Hybrid_StartStopp_Taste": disableVagStartStop,
+  })
+
+  return packer.make_can_msg("BCM_01", bus, values)
+
+
+def create_charisma_01_control(packer, bus, charisma_01_value, charisma_07_value, enableVagDrivingMode, vagDrivingMode, enableVagDynamicDcc, speed, steeringAngleDeg):
+  values = charisma_01_value
+
+  if enableVagDrivingMode:
+    if vagDrivingMode == 5: #eco
+      values.update({
+        "CHA_Ziel_FahrPr_ESP": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 2,
+        "CHA_Ziel_FahrPr_FL": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 5,
+        "CHA_Ziel_FahrPr_MO": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 5,
+        "CHA_Ziel_FahrPr_GE": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 5,
+        "CHA_Ziel_FahrPr_DR": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 2,
+        "CHA_Ziel_FahrPr_AFS": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 2,
+        "CHA_Ziel_FahrPr_EPS": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 2,
+        "CHA_Ziel_FahrPr_ACC": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 5,
+        "CHA_Ziel_FahrPr_MStSt": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 5,
+      })
+    elif vagDrivingMode == 1: #comfort
+      values.update({
+        "CHA_Ziel_FahrPr_ESP": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 2,
+        "CHA_Ziel_FahrPr_FL": 0 if charisma_01_value["CHA_Ziel_FahrPr_FL"] == 0 else 2,
+        "CHA_Ziel_FahrPr_MO": 0 if charisma_01_value["CHA_Ziel_FahrPr_MO"] == 0 else 2,
+        "CHA_Ziel_FahrPr_GE": 0 if charisma_01_value["CHA_Ziel_FahrPr_GE"] == 0 else 1,
+        "CHA_Ziel_FahrPr_DR": 0 if charisma_01_value["CHA_Ziel_FahrPr_DR"] == 0 else 2,
+        "CHA_Ziel_FahrPr_AFS": 0 if charisma_01_value["CHA_Ziel_FahrPr_AFS"] == 0 else 2,
+        "CHA_Ziel_FahrPr_EPS": 0 if charisma_01_value["CHA_Ziel_FahrPr_EPS"] == 0 else 2,
+        "CHA_Ziel_FahrPr_ACC": 0 if charisma_01_value["CHA_Ziel_FahrPr_ACC"] == 0 else 1,
+        "CHA_Ziel_FahrPr_MStSt": 0 if charisma_01_value["CHA_Ziel_FahrPr_MStSt"] == 0 else 0,
+      })
+    elif vagDrivingMode == 2: #normal
+      values.update({
+        "CHA_Ziel_FahrPr_ESP": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 2,
+        "CHA_Ziel_FahrPr_FL": 0 if charisma_01_value["CHA_Ziel_FahrPr_FL"] == 0 else 2,
+        "CHA_Ziel_FahrPr_MO": 0 if charisma_01_value["CHA_Ziel_FahrPr_MO"] == 0 else 2,
+        "CHA_Ziel_FahrPr_GE": 0 if charisma_01_value["CHA_Ziel_FahrPr_GE"] == 0 else 2,
+        "CHA_Ziel_FahrPr_DR": 0 if charisma_01_value["CHA_Ziel_FahrPr_DR"] == 0 else 2,
+        "CHA_Ziel_FahrPr_AFS": 0 if charisma_01_value["CHA_Ziel_FahrPr_AFS"] == 0 else 2,
+        "CHA_Ziel_FahrPr_EPS": 0 if charisma_01_value["CHA_Ziel_FahrPr_EPS"] == 0 else 2,
+        "CHA_Ziel_FahrPr_ACC": 0 if charisma_01_value["CHA_Ziel_FahrPr_ACC"] == 0 else 2,
+        "CHA_Ziel_FahrPr_MStSt": 0 if charisma_01_value["CHA_Ziel_FahrPr_MStSt"] == 0 else 0,
+      })
+    elif vagDrivingMode == 3: #sport
+      values.update({
+        "CHA_Ziel_FahrPr_ESP": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 2,
+        "CHA_Ziel_FahrPr_FL": 0 if charisma_01_value["CHA_Ziel_FahrPr_FL"] == 0 else 2,
+        "CHA_Ziel_FahrPr_MO": 0 if charisma_01_value["CHA_Ziel_FahrPr_MO"] == 0 else 3,
+        "CHA_Ziel_FahrPr_GE": 0 if charisma_01_value["CHA_Ziel_FahrPr_GE"] == 0 else 3,
+        "CHA_Ziel_FahrPr_DR": 0 if charisma_01_value["CHA_Ziel_FahrPr_DR"] == 0 else 3,
+        "CHA_Ziel_FahrPr_AFS": 0 if charisma_01_value["CHA_Ziel_FahrPr_AFS"] == 0 else 3,
+        "CHA_Ziel_FahrPr_EPS": 0 if charisma_01_value["CHA_Ziel_FahrPr_EPS"] == 0 else 3,
+        "CHA_Ziel_FahrPr_ACC": 0 if charisma_01_value["CHA_Ziel_FahrPr_ACC"] == 0 else 3,
+        "CHA_Ziel_FahrPr_MStSt": 0 if charisma_01_value["CHA_Ziel_FahrPr_MStSt"] == 0 else 0,
+      })
+    elif vagDrivingMode == 6: #race
+      values.update({
+        "CHA_Ziel_FahrPr_ESP": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 2,
+        "CHA_Ziel_FahrPr_FL": 0 if charisma_01_value["CHA_Ziel_FahrPr_FL"] == 0 else 2,
+        "CHA_Ziel_FahrPr_MO": 0 if charisma_01_value["CHA_Ziel_FahrPr_MO"] == 0 else 6,
+        "CHA_Ziel_FahrPr_GE": 0 if charisma_01_value["CHA_Ziel_FahrPr_GE"] == 0 else 6,
+        "CHA_Ziel_FahrPr_DR": 0 if charisma_01_value["CHA_Ziel_FahrPr_DR"] == 0 else 6,
+        "CHA_Ziel_FahrPr_AFS": 0 if charisma_01_value["CHA_Ziel_FahrPr_AFS"] == 0 else 6,
+        "CHA_Ziel_FahrPr_EPS": 0 if charisma_01_value["CHA_Ziel_FahrPr_EPS"] == 0 else 6,
+        "CHA_Ziel_FahrPr_ACC": 0 if charisma_01_value["CHA_Ziel_FahrPr_ACC"] == 0 else 6,
+        "CHA_Ziel_FahrPr_MStSt": 0 if charisma_01_value["CHA_Ziel_FahrPr_MStSt"] == 0 else 0,
+      })
+    elif vagDrivingMode == 10: #snow
+      values.update({
+        "CHA_Ziel_FahrPr_ESP": 0 if charisma_01_value["CHA_Ziel_FahrPr_ESP"] == 0 else 10,
+        "CHA_Ziel_FahrPr_FL": 0 if charisma_01_value["CHA_Ziel_FahrPr_FL"] == 0 else 2,
+        "CHA_Ziel_FahrPr_MO": 0 if charisma_01_value["CHA_Ziel_FahrPr_MO"] == 0 else 4,
+        "CHA_Ziel_FahrPr_GE": 0 if charisma_01_value["CHA_Ziel_FahrPr_GE"] == 0 else 10,
+        "CHA_Ziel_FahrPr_DR": 0 if charisma_01_value["CHA_Ziel_FahrPr_DR"] == 0 else 2,
+        "CHA_Ziel_FahrPr_AFS": 0 if charisma_01_value["CHA_Ziel_FahrPr_AFS"] == 0 else 3,
+        "CHA_Ziel_FahrPr_EPS": 0 if charisma_01_value["CHA_Ziel_FahrPr_EPS"] == 0 else 3,
+        "CHA_Ziel_FahrPr_ACC": 0 if charisma_01_value["CHA_Ziel_FahrPr_ACC"] == 0 else 5,
+        "CHA_Ziel_FahrPr_MStSt": 0 if charisma_01_value["CHA_Ziel_FahrPr_MStSt"] == 0 else 0,
+      })
+
+  if enableVagDynamicDcc:
+    if charisma_07_value["CHA_Current_Mode"] == 1 or charisma_07_value["CHA_Current_Mode"] == 2:
+      #speed
+      if speed > 80:
+        values.update({
+            "CHA_Ziel_FahrPr_DR": 3,
+          })
+      elif speed > 40 and speed <= 80:
+        values.update({
+            "CHA_Ziel_FahrPr_DR": 2,
+          })
+      elif speed <= 40:
+        values.update({
+            "CHA_Ziel_FahrPr_DR": charisma_07_value["CHA_Current_Mode"],
+          })
+      #steeringAngleDeg
+      if steeringAngleDeg > 30:
+        values.update({
+            "CHA_Ziel_FahrPr_DR": 3,
+          })
+      elif steeringAngleDeg > 15 and steeringAngleDeg <= 30:
+        values.update({
+            "CHA_Ziel_FahrPr_DR": 2,
+          })
+      elif steeringAngleDeg <= 15:
+        values.update({
+            "CHA_Ziel_FahrPr_DR": charisma_07_value["CHA_Current_Mode"],
+          })
+  return packer.make_can_msg("Charisma_01", bus, values)
+

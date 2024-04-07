@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 VERSION ""
 
 
@@ -231,6 +237,24 @@ BO_ 901 Charisma_01: 8 Gateway_MQB
  SG_ CHA_Ziel_FahrPr_ACC : 52|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ CHA_Ziel_FahrPr_SAK : 56|4@1+ (1,0) [0|15] "" SAK_MQB
  SG_ CHA_Ziel_FahrPr_MStSt : 60|4@1+ (1,0) [0|15] "" Vector__XXX
+
+BO_ 1000 Charisma_07: 8 Vector__XXX
+ SG_ CHA_Ziel_FahrPr_EBKV : 0|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_IL : 4|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Current_Mode : 8|4@1+ (1,0) [0|15] ""  Frontradar
+ SG_ CHA_Fahrer_Umschaltung : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_QS : 16|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_SCU : 20|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_HAL : 24|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_NR : 28|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_AV : 32|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_MXB : 36|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_AFR : 40|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_HDC : 44|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_EAR : 48|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_AEB : 52|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_FCWO : 56|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ CHA_Ziel_FahrPr_FCWP : 60|4@1+ (1,0) [0|15] "" Vector__XXX
 
 BO_ 945 DC_Hybrid_01: 8 LEH_MQB
  SG_ DC_HYB_iAktLV : 12|10@1+ (1,-511) [-511|510] "Unit_Amper" Gateway_MQB
@@ -846,6 +870,7 @@ BO_ 812 Motor_17: 8 Motor_Diesel_MQB
  SG_ MO_Charisma_Status : 45|2@1+ (1,0) [0|3] "" Gateway_MQB
 
 BO_ 1648 Motor_18: 8 Motor_Diesel_MQB
+ SG_ MO_max_Ladedruck : 0|6@1+ (0.1,0) [0|6.3] "Unit_Bar" Vector__XXX
  SG_ MO_Hybrid_StartStopp_LED : 43|2@1+ (1,0) [0|3] "" Gateway_MQB
  SG_ MO_Eis_Offroad_LED : 45|2@1+ (1,0) [0|3] "" Gateway_MQB
  SG_ MO_Anzahl_Abgesch_Zyl : 47|3@1+ (1,0) [0|7] "" Gateway_MQB
@@ -1182,6 +1207,23 @@ BO_ 1716 VIN_01: 8 Gateway_MQB
  SG_ VIN_10 m1 : 56|8@1+ (1,0) [0|255] ""  Airbag_MQB
  SG_ VIN_17 m2 : 56|8@1+ (1,0) [0|255] ""  Airbag_MQB
 
+BO_ 385 VZE_01: 8 Vector__XXX
+ SG_ VZE_Anzeigemodus : 0|2@1+ (1,0) [0|3] ""  Frontradar
+ SG_ VZE_Hinweistext : 2|3@1+ (1,0) [1|7] ""  Frontradar
+ SG_ VZE_Statuszaehler_1 : 5|2@1+ (1,0) [0|3] ""  Frontradar
+ SG_ VZE_Statuszaehler_2 : 7|2@1+ (1,0) [0|3] ""  Frontradar
+ SG_ VZE_Statuszaehler_3 : 9|2@1+ (1,0) [0|3] ""  Frontradar
+ SG_ VZE_Verkehrszeichen_1 : 11|8@1+ (1,0) [1|255] ""  Frontradar
+ SG_ VZE_Verkehrszeichen_2 : 19|8@1+ (1,0) [1|255] ""  Frontradar
+ SG_ VZE_Verkehrszeichen_3 : 27|8@1+ (1,0) [1|255] ""  Frontradar
+ SG_ VZE_Warnung_Verkehrszeichen_1 : 35|1@1+ (1,0) [0|1] ""  Frontradar
+ SG_ VZE_Warnung_Verkehrszeichen_2 : 36|1@1+ (1,0) [0|1] ""  Frontradar
+ SG_ VZE_Warnung_Verkehrszeichen_3 : 37|1@1+ (1,0) [0|1] ""  Frontradar
+ SG_ VZE_Zusatzschild_1 : 38|4@1+ (1,0) [1|15] ""  Frontradar
+ SG_ VZE_Zusatzschild_2 : 42|4@1+ (1,0) [1|15] ""  Frontradar
+ SG_ VZE_Zusatzschild_3 : 46|4@1+ (1,0) [1|15] ""  Frontradar
+ SG_ VZE_Hinweistext_02 : 50|4@1+ (1,0) [1|15] ""  Frontradar
+
 BO_ 175 Waehlhebel_03: 4 Waehlhebel_MQB
  SG_ WH_Status_Sperre : 0|3@1+ (1,0) [0|7] "" Getriebe_DQ_Hybrid_MQB,Getriebe_DQ_MQB
  SG_ WH_Initialisierung : 3|1@1+ (1,0) [0|1] "" Getriebe_DQ_Hybrid_MQB,Getriebe_DQ_MQB
@@ -1352,6 +1394,33 @@ BO_ 997 TSG_FT_02: 8 XXX
  SG_ TSG_FT_02_CRC : 0|8@1+ (1,0) [0|255] "" XXX
 
 BO_ 1175 Parkhilfe_01: 8 XXX
+ SG_ PH_Visualisierung : 0|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ PDC_Tonausgabe_Front : 4|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ PDC_Tonausgabe_Heck : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ PH_nachtr_Stopp_Anf : 12|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Abschaltursache : 13|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ PH_Opt_Anzeige_V_ein : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Opt_Anzeige_H_ein : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Opt_Anz_V_Hindernis : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Opt_Anz_H_Hindernis : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Tongeber_V_aktiv : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Tongeber_H_aktiv : 21|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Tongeber_mute : 22|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Anf_Audioabsenkung : 23|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Tongeber_H_verfuegbar : 24|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PLA_Anf_Aufschaltung_RVC : 25|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Taster : 28|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ PH_Anf_Verdeck : 30|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ PH_Frequenz_hinten : 32|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ PH_Lautstaerke_hinten : 36|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ PH_Frequenz_vorn : 40|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ PH_Lautstaerke_vorn : 44|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ PH_StartStopp_Info : 49|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ PH_Stoermeldung : 52|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ PH_defekt : 56|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_gestoert : 57|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ PH_Systemzustand : 58|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ PH_Display_Kundenwunsch : 61|2@1+ (1,0) [0|3] "" Vector__XXX
 
 BO_ 427 ESP_33: 8 XXX
  SG_ ESP_33_BZ : 8|4@1+ (1,0) [0|15] "" XXX
@@ -1395,6 +1464,29 @@ BO_ 1605 FLA_01: 8 XXX
 BO_ 1624 Licht_vorne_01: 8 XXX
 
 BO_ 1646 Klima_03: 8 XXX
+ SG_ KL_STL_aktiv : 0|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_STH_aktiv : 1|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_Solarluefter_aktiv : 2|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_Umluft_Taste : 3|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_Geblaese_Fond_Status : 4|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ KL_STH_Ansteuerung : 8|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ KL_STH_Betriebsdauer : 10|6@1+ (1,0) [0|60] "Unit_Minut" Vector__XXX
+ SG_ KL_Magnetventil : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_WaPu : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_Geblaese_Status : 18|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ KL_Restwaerme_aktiv : 22|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_Kompressorkupplung : 23|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_BCmE_Livetip_Freigabe : 24|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_SH_Soll_hl : 25|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ KL_SH_Soll_hr : 28|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ KL_Innen_Temp : 32|8@1+ (0.5,-50) [-50|76] "Unit_DegreCelsi" Vector__XXX
+ SG_ KL_I_Geblaese_Fond : 40|8@1+ (0.25,0) [0|63.5] "Unit_Amper" Vector__XXX
+ SG_ KL_Heizkreisventilstellung : 49|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ KL_FSH_Automatikbetrieb : 51|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ KL_SIH_LEH_Verteilung_VL : 52|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ KL_SIH_LEL_Verteilung_VL : 55|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ KL_SIH_LEH_Verteilung_VR : 58|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ KL_SIH_LEL_Verteilung_VR : 61|3@1+ (1,0) [0|7] "" Vector__XXX
 
 BO_ 1720 Kombi_03: 8 XXX
  SG_ KBI_Reifenumfang : 0|12@1+ (1,0) [0|4095] "Unit_MilliMeter"  XXX
