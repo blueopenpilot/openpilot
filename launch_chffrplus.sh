@@ -1,4 +1,9 @@
 #!/usr/bin/bash
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
 
 if [ -z "$BASEDIR" ]; then
   BASEDIR="/data/openpilot"
@@ -186,7 +191,29 @@ function launch {
 
   # start manager
   cd selfdrive/manager
-  ./build.py && ./manager.py
+  #Pon: Dump log to file, add rebuild option
+  if [ -d "/data/media/0" ]; then
+    if [ -d "/data/media/0/log" ]; then
+      ##Pon: Waiting for time sync
+      #while [ ! $(date +"%Y") == 2024 ]
+      #do
+      #  date
+      #  sleep 1
+      #done
+      if [ -d "/data/media/0/build" ]; then
+        ./build.py > /data/media/0/log/build_log_$(date +"%Y%m%d_%H%M%S").txt && ./manager.py > /data/media/0/log/launch_log_$(date +"%Y%m%d_%H%M%S").txt
+      else
+        ./manager.py > /data/media/0/log/launch_log_$(date +"%Y%m%d_%H%M%S").txt
+      fi
+    fi
+  else
+    echo "[Warning] No SSD to save log!"
+  fi
+  if [ -d "/data/media/0/build" ]; then
+    ./build.py > /data/media/build_log_last.txt && ./manager.py > /data/media/launch_log_last.txt
+  else
+    ./manager.py > /data/media/launch_log_last.txt
+  fi
 
   # if broken, keep on screen error
   while true; do sleep 1; done

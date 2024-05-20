@@ -1,5 +1,12 @@
-import math
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
 
+import math
+import cereal.messaging as messaging
+from common.params import Params, put_nonblocking
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
 from selfdrive.controls.lib.latcontrol import LatControl, MIN_STEER_SPEED
@@ -28,7 +35,9 @@ class LatControlPID(LatControl):
 
     pid_log.steeringAngleDesiredDeg = angle_steers_des
     pid_log.angleError = angle_steers_des - CS.steeringAngleDeg
-    if CS.vEgo < MIN_STEER_SPEED or not active:
+    #Pon FLKA
+    #print("[BOP][latcontrol_pid.py][update()][FLKA] CS.cruiseState.available=", CS.cruiseState.available)
+    if (CS.vEgo < MIN_STEER_SPEED or not active) and (CS.vEgo < MIN_STEER_SPEED or not CS.cruiseState.available):
       output_steer = 0.0
       pid_log.active = False
       self.pid.reset()

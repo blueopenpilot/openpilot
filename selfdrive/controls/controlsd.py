@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import os
 import math
 from numbers import Number
@@ -51,6 +57,7 @@ LaneChangeDirection = log.LateralPlan.LaneChangeDirection
 EventName = car.CarEvent.EventName
 ButtonEvent = car.CarState.ButtonEvent
 SafetyModel = car.CarParams.SafetyModel
+GearShifter = car.CarState.GearShifter
 
 IGNORED_SAFETY_MODES = [SafetyModel.silent, SafetyModel.noOutput]
 CSID_MAP = {"0": EventName.roadCameraError, "1": EventName.wideRoadCameraError, "2": EventName.driverCameraError}
@@ -77,6 +84,7 @@ class Controls:
     if self.sm is None:
       ignore = ['driverCameraState', 'managerState'] if SIMULATION else None
       self.sm = messaging.SubMaster(['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
+                                     'vagParam',
                                      'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
                                      'managerState', 'liveParameters', 'radarState'] + self.camera_packets + joystick_packet,
                                      ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
@@ -321,7 +329,9 @@ class Controls:
       if not NOSENSOR:
         if not self.sm['liveLocationKalman'].gpsOK and (self.distance_traveled > 1000):
           # Not show in first 1 km to allow for driving out of garage. This event shows after 5 minutes
-          self.events.add(EventName.noGps)
+          #Pon Disable no gps alert
+          #self.events.add(EventName.noGps)
+          print("NO GPS")
       if not self.sm.all_alive(self.camera_packets):
         self.events.add(EventName.cameraMalfunction)
       if self.sm['modelV2'].frameDropPerc > 20:
@@ -609,6 +619,106 @@ class Controls:
     current_alert = self.AM.process_alerts(self.sm.frame, clear_event_types)
     if current_alert:
       hudControl.visualAlert = current_alert.visual_alert
+
+
+    #VAG
+    # ===== Vag param settings =====
+    # ----- FLKA -----
+    isVagFulltimeLkaEnabled = self.sm['vagParam'].vagParamFeature.isVagFulltimeLkaEnabled
+    isVagFulltimeLkaEnableWithBlinker = self.sm['vagParam'].vagParamFeature.isVagFulltimeLkaEnableWithBlinker
+    isVagFulltimeLkaEnableWithBrake = self.sm['vagParam'].vagParamFeature.isVagFulltimeLkaEnableWithBrake
+    isVagFulltimeLkaEnableWithAssistant = self.sm['vagParam'].vagParamFeature.isVagFulltimeLkaEnableWithAssistant
+    # ----- Blindspot vibrator -----
+    isVagBlindspotEnabled = self.sm['vagParam'].vagParamFeature.isVagBlindspotEnabled
+    isVagBlindspotInfoVibratorEnabled = self.sm['vagParam'].vagParamFeature.isVagBlindspotInfoVibratorEnabled
+    isVagBlindspotWarningVibratorEnabled = self.sm['vagParam'].vagParamFeature.isVagBlindspotWarningVibratorEnabled
+    isVagBlindspotVibratorWithFlka = self.sm['vagParam'].vagParamFeature.isVagBlindspotVibratorWithFlka
+    # ----- Force disable startstop -----
+    CC.disableVagStartStop = self.sm['vagParam'].vagParamFeature.isVagForceDisableStartstop
+    # ----- Driving Mode -----
+    CC.enableVagDrivingMode = self.sm['vagParam'].vagParamFeature.isVagDrivingModeEnabled
+    CC.vagDrivingMode = self.sm['vagParam'].vagParamFeature.vagDrivingMode
+    CC.enableVagDynamicDcc = self.sm['vagParam'].vagParamFeature.isVagDynamicDccEnabled
+
+
+    # ===== (HCA_01) =====
+    self.epsReadyForHca01 = bool(not CS.steerWarning \
+                                and not CS.steerError)
+    #self.engineReadyForHca01 = bool(CS.engineRpm > 0)
+    self.engineReadyForHca01 = True
+    self.gearShifterReadyForHca01 = bool(CS.gearShifter==car.CarState.GearShifter.drive \
+                                   or CS.gearShifter==car.CarState.GearShifter.sport \
+                                   or CS.gearShifter==car.CarState.GearShifter.manumatic \
+                                   or CS.gearShifter==car.CarState.GearShifter.eco)
+    self.speedReadyForHca01 = bool(CS.vagUiField.speed > 0)
+
+    # ===== FLKA =====
+    if bool(CS.leftBlinker or CS.rightBlinker):
+      if isVagFulltimeLkaEnableWithBlinker:
+        FulltimeLkaEnableWithBlinker = True
+      else:
+        FulltimeLkaEnableWithBlinker = False
+    else:
+      FulltimeLkaEnableWithBlinker = True
+
+    if CS.brakePressed:
+      if isVagFulltimeLkaEnableWithBrake:
+        FulltimeLkaEnableWithBrake = True
+      else:
+        FulltimeLkaEnableWithBrake = False
+    else:
+      FulltimeLkaEnableWithBrake = True
+
+    self.settingsEnableReadyForFlka = bool(isVagFulltimeLkaEnabled \
+                                           and FulltimeLkaEnableWithBlinker \
+                                           and FulltimeLkaEnableWithBrake)
+    self.cruiseStateReadyForFlka = bool(CS.cruiseState.available)
+    self.cameraCalibratedForFlka = bool(self.sm['liveCalibration'].calStatus == Calibration.CALIBRATED)
+
+    CC.availableVagFlka = bool(self.initialized \
+                          and self.epsReadyForHca01 \
+                          and self.engineReadyForHca01 \
+                          and self.gearShifterReadyForHca01 \
+                          and self.speedReadyForHca01 \
+                          and self.settingsEnableReadyForFlka \
+                          and self.cruiseStateReadyForFlka \
+                          and self.cameraCalibratedForFlka)
+
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] CC.availableVagFlka=", CC.availableVagFlka)
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] self.initialized=", self.initialized)
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] self.epsReadyForHca01=", self.epsReadyForHca01)
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] self.engineReadyForHca01=", self.engineReadyForHca01)
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] self.gearShifterReadyForHca01=", self.gearShifterReadyForHca01)
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] self.speedReadyForHca01=", self.speedReadyForHca01)
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] self.settingsEnableReadyForFlka=", self.settingsEnableReadyForFlka)
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] self.cruiseStateReadyForFlka=", self.cruiseStateReadyForFlka)
+    #print("[BOP][controlsd.py][publish_logs()][FLKA] self.cameraCalibratedForFlka=", self.cameraCalibratedForFlka)
+
+    # ===== Blindspot Vibrator =====
+    self.settingsEnableReadyForInfoBlindspotVibrator = bool(isVagBlindspotEnabled \
+                                                       and isVagBlindspotInfoVibratorEnabled)
+    self.settingsEnableReadyForWarningBlindspotVibrator = bool(isVagBlindspotEnabled \
+                                                          and isVagBlindspotWarningVibratorEnabled)
+    self.cruiseStateReadyForBlindspotVibrator = bool((CS.cruiseState.available and isVagBlindspotVibratorWithFlka) \
+                                                or (not CS.cruiseState.available and not CS.cruiseState.enabled))
+
+    CC.availableVagBlindspotInfoVibrator = bool(self.initialized \
+                                        and self.epsReadyForHca01 \
+                                        and self.engineReadyForHca01 \
+                                        and self.gearShifterReadyForHca01 \
+                                        and self.speedReadyForHca01 \
+                                        and self.settingsEnableReadyForInfoBlindspotVibrator \
+                                        and self.cruiseStateReadyForBlindspotVibrator \
+                                        and (CS.leftBlindspot or CS.rightBlindspot))
+
+    CC.availableVagBlindspotWarningVibrator = bool(self.initialized \
+                                        and self.epsReadyForHca01 \
+                                        and self.engineReadyForHca01 \
+                                        and self.gearShifterReadyForHca01 \
+                                        and self.speedReadyForHca01 \
+                                        and self.settingsEnableReadyForWarningBlindspotVibrator \
+                                        and self.cruiseStateReadyForBlindspotVibrator \
+                                        and (CS.leftBlindspotWarning or CS.rightBlindspotWarning))
 
     if not self.read_only and self.initialized:
       # send car controls over can

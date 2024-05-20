@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 from collections import defaultdict
 from typing import Dict
 
@@ -17,6 +23,9 @@ class CarControllerParams:
   GRA_VBP_STEP = 100             # Send ACC virtual button presses once a second
   GRA_VBP_COUNT = 16             # Send VBP messages for ~0.5s (GRA_ACC_STEP * 16)
 
+  BCM_01_STEP = 100                        # 1Hz
+  CHARISMA_01_STEP = 1                     # 100 Hz
+
   # Observed documented MQB limits: 3.00 Nm max, rate of change 5.00 Nm/sec.
   # Limiting rate-of-change based on real-world testing and Comma's safety
   # requirements for minimum time to lane departure.
@@ -29,6 +38,7 @@ class CarControllerParams:
 
 class CANBUS:
   pt = 0
+  body = 1
   cam = 2
 
 class DBC_FILES:

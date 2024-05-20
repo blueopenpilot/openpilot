@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import time
 import json
 import jwt
@@ -91,7 +97,8 @@ def register(show_spinner=False) -> str:
 
   if dongle_id:
     params.put("DongleId", dongle_id)
-    set_offroad_alert("Offroad_UnofficialHardware", (dongle_id == UNREGISTERED_DONGLE_ID) and not PC)
+    #Pon Disable unregistered alert
+    #set_offroad_alert("Offroad_UnofficialHardware", (dongle_id == UNREGISTERED_DONGLE_ID) and not PC)
   return dongle_id
 
 
