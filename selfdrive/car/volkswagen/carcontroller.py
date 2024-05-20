@@ -1,3 +1,10 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
+import cereal.messaging as messaging
 from cereal import car
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.volkswagen import volkswagencan
@@ -8,6 +15,7 @@ VisualAlert = car.CarControl.HUDControl.VisualAlert
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
+    self.CP = CP
     self.apply_steer_last = 0
 
     self.packer_pt = CANPacker(DBC_FILES.mqb)
@@ -26,8 +34,20 @@ class CarController():
 
     can_sends = []
 
-    # **** Steering Controls ************************************************ #
+    ###### BCM_01 #####
+    if CS.out.vagCanModule.bus0Bcm01 and CS.out.vagCanModule.bus0Motor18:
+      if c.disableVagStartStop:
+        if frame % P.BCM_01_STEP == 0:
+          if CS.motor_18["MO_Hybrid_StartStopp_LED"] == 0:
+            can_sends.append(volkswagencan.create_bcm_01_control(self.packer_pt, CANBUS.body, CS.bcm_01, True))
 
+    ###### CHARISMA_01 #####
+    if CS.out.vagCanModule.bus0Charisma01 and CS.out.vagCanModule.bus0Charisma07:
+      if c.enableVagDrivingMode or c.enableVagDynamicDcc:
+        if frame % P.CHARISMA_01_STEP == 0:
+          can_sends.append(volkswagencan.create_charisma_01_control(self.packer_pt, CANBUS.body, CS.charisma_01, CS.charisma_07, c.enableVagDrivingMode, c.vagDrivingMode, c.enableVagDynamicDcc, CS.out.vagUiField.speed, CS.out.steeringAngleDeg))
+
+    # **** Steering Controls ************************************************ #
     if frame % P.HCA_STEP == 0:
       # Logic to avoid HCA state 4 "refused":
       #   * Don't steer unless HCA is in state 3 "ready" or 5 "active"
@@ -39,7 +59,9 @@ class CarController():
       # torque value. Do that anytime we happen to have 0 torque, or failing that,
       # when exceeding ~1/3 the 360 second timer.
 
-      if c.active and CS.out.vEgo > CS.CP.minSteerSpeed and not (CS.out.standstill or CS.out.steerError or CS.out.steerWarning):
+      #Pon FLKA
+      #print("[BOP][carcontroller.py][update()][FLKA] c.availableVagFlka=", c.availableVagFlka)
+      if (c.active or c.availableVagFlka) and CS.out.vEgo > CS.CP.minSteerSpeed and not (CS.out.standstill or CS.out.steerError or CS.out.steerWarning):
         new_steer = int(round(actuators.steer * P.STEER_MAX))
         apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, P)
         self.steer_rate_limited = new_steer != apply_steer
@@ -66,18 +88,42 @@ class CarController():
 
       self.apply_steer_last = apply_steer
       idx = (frame / P.HCA_STEP) % 16
+
+      #Pon Blindspot info/warning vibrator
+      #vibrator_threshold = 0.0
+      vibratorEnabled = 0
+      #accAvailable = CS.out.cruiseState.available
+      #accEnabled = CS.out.cruiseState.enabled
+      leftBlindspot = CS.out.leftBlindspot
+      rightBlindspot = CS.out.rightBlindspot
+      leftBlindspotWarning = CS.out.leftBlindspotWarning
+      rightBlindspotWarning = CS.out.rightBlindspotWarning
+
+      #print("[BOP][carcontroller.py][update()][Blindspot]", c.availableVagBlindspotInfoVibrator, c.availableVagBlindspotWarningVibrator)
+      if (c.availableVagBlindspotInfoVibrator and (leftBlindspot or rightBlindspot)):
+        #if (((not accAvailable and not accEnabled) or (accAvailable and isVagBlindspotVibratorWithFlka)) and (leftBlindspot or rightBlindspot)):
+        vibratorEnabled = 1
+
+      if (c.availableVagBlindspotWarningVibrator and (leftBlindspotWarning or rightBlindspotWarning)):
+        #if (((not accAvailable and not accEnabled) or (accAvailable and isVagBlindspotVibratorWithFlka)) and (leftBlindspotWarning or rightBlindspotWarning)):
+        vibratorEnabled = 2
+
       can_sends.append(volkswagencan.create_mqb_steering_control(self.packer_pt, CANBUS.pt, apply_steer,
-                                                                 idx, hcaEnabled))
+                                                                 idx, hcaEnabled, vibratorEnabled))
 
     # **** HUD Controls ***************************************************** #
-
     if frame % P.LDW_STEP == 0:
+      #Pon FLKA
+      hudEnabled = True if (enabled or c.availableVagFlka) and not CS.out.standstill else False
+      #print("[BOP][carcontroller.py][update()][FLKA] hudEnabled=", hudEnabled)
+
       if visual_alert in (VisualAlert.steerRequired, VisualAlert.ldw):
         hud_alert = MQB_LDW_MESSAGES["laneAssistTakeOverSilent"]
       else:
         hud_alert = MQB_LDW_MESSAGES["none"]
 
-      can_sends.append(volkswagencan.create_mqb_hud_control(self.packer_pt, CANBUS.pt, enabled,
+      #Pon FLKA
+      can_sends.append(volkswagencan.create_mqb_hud_control(self.packer_pt, CANBUS.pt, hudEnabled,
                                                             CS.out.steeringPressed, hud_alert, left_lane_visible,
                                                             right_lane_visible, CS.ldw_stock_values,
                                                             left_lane_depart, right_lane_depart))

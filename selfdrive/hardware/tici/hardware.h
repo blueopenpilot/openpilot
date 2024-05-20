@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng.
+ * All Rights Reserved.
+ * Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng.
+ */
+
 #pragma once
 
 #include <cstdlib>
@@ -32,6 +38,18 @@ public:
       bl_power_control.close();
     }
   };
+  static bool get_is_display_power_on() {
+    std::ifstream bl_power_control("/sys/class/backlight/panel0-backlight/bl_power");
+    if (bl_power_control.is_open()) {
+      char c = bl_power_control.get();
+      if (c == '0') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
 
   static bool get_ssh_enabled() { return Params().getBool("SshEnabled"); };
   static void set_ssh_enabled(bool enabled) { Params().putBool("SshEnabled", enabled); };

@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 using Cxx = import "./include/c++.capnp";
 $Cxx.namespace("cereal");
 
@@ -153,6 +159,7 @@ struct CarState {
   brake @5 :Float32;      # this is user pedal only
   brakePressed @6 :Bool;  # this is user pedal only
   brakeHoldActive @38 :Bool;
+  brakeLights @19 :Bool;
 
   # steering wheel
   steeringAngleDeg @7 :Float32;
@@ -194,6 +201,35 @@ struct CarState {
   # blindspot sensors
   leftBlindspot @33 :Bool; # Is there something blocking the left lane change
   rightBlindspot @34 :Bool; # Is there something blocking the right lane change
+
+  #VAG
+  leftBlindspotWarning @39 :Bool; # Is there something blocking the right lane change
+  rightBlindspotWarning @40 :Bool; # Is there something blocking the right lane change
+  vagUiField @41 :VagUiField;
+  engineRpm @42 :Float32;
+  vagCanModule @43 :VagCanModule;
+
+  struct VagUiField {
+    moIstgang @0 :Int32;                #gear level
+    moLadedruck @1 :Float32;            #engine turbo pressure          (HUD)
+    moOeldruck @2 :Float32;             #engine oil pressure            (HUD)
+    moAnsaugluftTemp @3 :Float32;       #engine in air temperature      (HUD)
+    moKuehlmittelTemp @4 :Float32;      #engine coolant temperature     (HUD)
+    moOelTemp @5 :Float32;              #engine oil temperature         (HUD)
+    moItmKuehlmittelTemp @6 :Float32;   #coolant temperature            (HUD)
+    moMaxLadedruck @7 :Float32;         #engine turbo max pressure
+    moRelSaugrohrdruck @8 :Float32;     #engine in air pressure         (HUD)
+    moRelSaugrohrdruckGemErr @9 :Int32; #engine in air pressure error
+    geZielgang @10 :Int32;              #gear level                     (HUD)
+    geSumpftemperatur @11 :Float32;     #gear oil temperature           (HUD)
+    espBremsdruck @12 :Float32;         #brake pressure                 (HUD)
+    espBvkUnterdruck @13 :Float32;      #brake BKV negative pressure
+    bcm1AussenTempUngef @14 :Float32;   #indoor temperature             (HUD)
+    obdEngCoolTemp @15 :Float32;        #OBD engine oil temperature
+    kbiAussenTempGef @16 :Float32;      #outdoor temperature            (HUD)
+    accAbstandsindex @17 :Int32;        #acc abstand index
+    speed @18 :Float32;
+  }
 
   struct WheelSpeeds {
     # optional wheel speeds
@@ -247,7 +283,7 @@ struct CarState {
   }
 
   errorsDEPRECATED @0 :List(CarEvent.EventName);
-  brakeLightsDEPRECATED @19 :Bool;
+  #brakeLightsDEPRECATED @19 :Bool;
 }
 
 # ******* radar state @ 20hz *******
@@ -304,6 +340,15 @@ struct CarControl {
 
   cruiseControl @4 :CruiseControl;
   hudControl @5 :HUDControl;
+
+  #VAG
+  availableVagFlka @11 :Bool;
+  availableVagBlindspotInfoVibrator @12 :Bool;
+  availableVagBlindspotWarningVibrator @13 :Bool;
+  disableVagStartStop @14 :Bool;
+  enableVagDrivingMode @15 :Bool;
+  vagDrivingMode @16 :VagDrivingMode;
+  enableVagDynamicDcc @17 :Bool;
 
   struct Actuators {
     # range from 0.0 - 1.0
@@ -372,6 +417,13 @@ struct CarControl {
       prompt @6;
       promptRepeat @7;
       promptDistracted @8;
+
+      leftBlindspot @9;
+      rightBlindspot @10;
+      leftBlinker @11;
+      rightBlinker @12;
+      leadCarGoing @13;
+      noLeadCarWarning @14;
     }
   }
 
@@ -454,6 +506,9 @@ struct CarParams {
   networkLocation @50 :NetworkLocation;  # Where Panda/C2 is integrated into the car's CAN network
 
   wheelSpeedFactor @63 :Float32; # Multiplier on wheels speeds to computer actual speeds
+
+  #VAG
+  vagCanModule @66 :VagCanModule;
 
   struct SafetyConfig {
     safetyModel @0 :SafetyModel;
@@ -606,4 +661,39 @@ struct CarParams {
   startAccelDEPRECATED @32 :Float32;
   communityFeatureDEPRECATED @46: Bool;
   startingAccelRateDEPRECATED @53 :Float32;
+}
+
+
+struct VagCanModule {
+  bus0Motor07 @0 :Bool;
+  bus0VehicleSpeed @1 :Bool;
+  bus0Bcm01 @2: Bool;
+  bus0Kombi02 @3: Bool;
+  bus0Motor18 @4: Bool;
+  bus0Charisma01 @5: Bool;
+  bus0Charisma07 @6: Bool;
+  bus1Getriebe14 @7: Bool;
+  bus1Motor12 @8: Bool;
+  bus1Motor09 @9: Bool;
+  bus1Obd01 @10: Bool;
+  bus1Motor04 @11: Bool;
+}
+
+enum VagDrivingMode {
+  notSet @0;
+  comfort @1;
+  normal @2;
+  sport @3;
+  offroad @4;
+  eco @5;
+  race @6;
+  individual @7;
+  on @8;
+  off @9;
+  snow @10;
+  config11 @11;
+  config12 @12;
+  sand @13;
+  config14 @14;
+  config15 @15;
 }

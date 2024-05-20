@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import datetime
 import os
 import queue
@@ -322,25 +328,26 @@ def thermald_thread(end_event, hw_queue):
 
     # **** starting logic ****
 
-    # Ensure date/time are valid
-    now = datetime.datetime.utcnow()
-    startup_conditions["time_valid"] = (now.year > 2020) or (now.year == 2020 and now.month >= 10)
-    set_offroad_alert_if_changed("Offroad_InvalidTime", (not startup_conditions["time_valid"]))
-
-    startup_conditions["up_to_date"] = params.get("Offroad_ConnectivityNeeded") is None or params.get_bool("DisableUpdates") or params.get_bool("SnoozeUpdate")
-    startup_conditions["not_uninstalling"] = not params.get_bool("DoUninstall")
-    startup_conditions["accepted_terms"] = params.get("HasAcceptedTerms") == terms_version
-
-    # with 2% left, we killall, otherwise the phone will take a long time to boot
-    startup_conditions["free_space"] = msg.deviceState.freeSpacePercent > 2
-    startup_conditions["completed_training"] = params.get("CompletedTrainingVersion") == training_version or \
-                                               params.get_bool("Passive")
-    startup_conditions["not_driver_view"] = not params.get_bool("IsDriverViewEnabled")
-    startup_conditions["not_taking_snapshot"] = not params.get_bool("IsTakingSnapshot")
-    # if any CPU gets above 107 or the battery gets above 63, kill all processes
-    # controls will warn with CPU above 95 or battery above 60
-    onroad_conditions["device_temp_good"] = thermal_status < ThermalStatus.danger
-    set_offroad_alert_if_changed("Offroad_TemperatureTooHigh", (not onroad_conditions["device_temp_good"]))
+    #Pon Disable valid time check
+    ## Ensure date/time are valid
+    #now = datetime.datetime.utcnow()
+    #startup_conditions["time_valid"] = (now.year > 2020) or (now.year == 2020 and now.month >= 10)
+    #set_offroad_alert_if_changed("Offroad_InvalidTime", (not startup_conditions["time_valid"]))
+    #
+    #startup_conditions["up_to_date"] = params.get("Offroad_ConnectivityNeeded") is None or params.get_bool("DisableUpdates") or params.get_bool("SnoozeUpdate")
+    #startup_conditions["not_uninstalling"] = not params.get_bool("DoUninstall")
+    #startup_conditions["accepted_terms"] = params.get("HasAcceptedTerms") == terms_version
+    #
+    ## with 2% left, we killall, otherwise the phone will take a long time to boot
+    #startup_conditions["free_space"] = msg.deviceState.freeSpacePercent > 2
+    #startup_conditions["completed_training"] = params.get("CompletedTrainingVersion") == training_version or \
+    #                                           params.get_bool("Passive")
+    #startup_conditions["not_driver_view"] = not params.get_bool("IsDriverViewEnabled")
+    #startup_conditions["not_taking_snapshot"] = not params.get_bool("IsTakingSnapshot")
+    ## if any CPU gets above 107 or the battery gets above 63, kill all processes
+    ## controls will warn with CPU above 95 or battery above 60
+    #onroad_conditions["device_temp_good"] = thermal_status < ThermalStatus.danger
+    #set_offroad_alert_if_changed("Offroad_TemperatureTooHigh", (not onroad_conditions["device_temp_good"]))
 
     if TICI:
       missing = (not Path("/data/media").is_mount()) and (not os.path.isfile("/persist/comma/living-in-the-moment"))
@@ -437,17 +444,18 @@ def thermald_thread(end_event, hw_queue):
     statlog.gauge("fan_speed_percent_desired", msg.deviceState.fanSpeedPercentDesired)
     statlog.gauge("screen_brightness_percent", msg.deviceState.screenBrightnessPercent)
 
-    # report to server once every 10 minutes
-    if (count % int(600. / DT_TRML)) == 0:
-      if EON and started_ts is None and msg.deviceState.memoryUsagePercent > 40:
-        cloudlog.event("High offroad memory usage", mem=msg.deviceState.memoryUsagePercent)
-
-      cloudlog.event("STATUS_PACKET",
-                     count=count,
-                     pandaStates=[strip_deprecated_keys(p.to_dict()) for p in pandaStates],
-                     peripheralState=strip_deprecated_keys(peripheralState.to_dict()),
-                     location=(strip_deprecated_keys(sm["gpsLocationExternal"].to_dict()) if sm.alive["gpsLocationExternal"] else None),
-                     deviceState=strip_deprecated_keys(msg.to_dict()))
+    #Pon Disable server check
+    ## report to server once every 10 minutes
+    #if (count % int(600. / DT_TRML)) == 0:
+    #  if EON and started_ts is None and msg.deviceState.memoryUsagePercent > 40:
+    #    cloudlog.event("High offroad memory usage", mem=msg.deviceState.memoryUsagePercent)
+    #
+    #  cloudlog.event("STATUS_PACKET",
+    #                 count=count,
+    #                 pandaStates=[strip_deprecated_keys(p.to_dict()) for p in pandaStates],
+    #                 peripheralState=strip_deprecated_keys(peripheralState.to_dict()),
+    #                 location=(strip_deprecated_keys(sm["gpsLocationExternal"].to_dict()) if sm.alive["gpsLocationExternal"] else None),
+    #                 deviceState=strip_deprecated_keys(msg.to_dict()))
 
     count += 1
 

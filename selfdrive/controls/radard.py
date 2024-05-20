@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import importlib
 import math
 from collections import defaultdict, deque
@@ -112,6 +118,9 @@ class RadarD():
       self.v_ego_hist.append(self.v_ego)
     if sm.updated['modelV2']:
       self.ready = True
+    if sm.updated['vagParam']:
+      isVagParamFromCerealEnabled = sm['vagParam'].vagParamGeneral.isVagParamFromCerealEnabled
+      isVagLeadCarEnabled = sm['vagParam'].vagParamSetting.isVagLeadCarEnabled
 
     ar_pts = {}
     for pt in rr.points:
@@ -196,7 +205,7 @@ def radard_thread(sm=None, pm=None, can_sock=None):
   if can_sock is None:
     can_sock = messaging.sub_sock('can')
   if sm is None:
-    sm = messaging.SubMaster(['modelV2', 'carState'], ignore_avg_freq=['modelV2', 'carState'])  # Can't check average frequency, since radar determines timing
+    sm = messaging.SubMaster(['modelV2', 'carState', 'vagParam'], ignore_avg_freq=['modelV2', 'carState'])  # Can't check average frequency, since radar determines timing
   if pm is None:
     pm = messaging.PubMaster(['radarState', 'liveTracks'])
 
@@ -206,8 +215,28 @@ def radard_thread(sm=None, pm=None, can_sock=None):
   RD = RadarD(CP.radarTimeStep, RI.delay)
 
   # TODO: always log leads once we can hide them conditionally
-  enable_lead = CP.openpilotLongitudinalControl or not CP.radarOffCan
+  # Pon Lead Car
+  # Init time, cereal not ready
+  #isVagParamFromCerealEnabled = sm['vagParam'].vagParamGeneral.isVagParamFromCerealEnabled
 
+  #if isVagParamFromCerealEnabled:
+  #  isVagLeadCarEnabled = sm['vagParam'].vagParamSetting.isVagLeadCarEnabled
+  #else :
+  #  params = Params()
+  #  try:
+  #    isVagLeadCarEnabled = params.get_bool("IsVagLeadCarEnabled")
+  #  except:
+  #    print("[BOP][radard.py][radard_thread()][IsVagLeadCarEnabled] Get param exception")
+  #    isVagLeadCarEnabled = False
+
+  params = Params()
+  try:
+    isVagLeadCarEnabled = params.get_bool("IsVagLeadCarEnabled")
+  except:
+    print("[BOP][radard.py][radard_thread()][IsVagLeadCarEnabled] Get param exception")
+    isVagLeadCarEnabled = False
+
+  enable_lead = CP.openpilotLongitudinalControl or not CP.radarOffCan or isVagLeadCarEnabled
   while 1:
     can_strings = messaging.drain_sock_raw(can_sock, wait_for_one=True)
     rr = RI.update(can_strings)

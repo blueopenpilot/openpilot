@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 import os
 from typing import Optional
 
@@ -66,6 +72,7 @@ services = {
   "navInstruction": (True, 0.),
   "navRoute": (True, 0.),
   "navThumbnail": (True, 0.),
+  "vagParam": (False, 0.),
 
   # debug
   "testJoystick": (False, 0.),

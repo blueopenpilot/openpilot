@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 using Cxx = import "./include/c++.capnp";
 $Cxx.namespace("cereal");
 
@@ -1495,6 +1501,9 @@ struct Event {
     navRoute @83 :NavRoute;
     navThumbnail @84: Thumbnail;
 
+    # VAG
+    vagParam @86 :VagParam;
+
     # *********** debug ***********
     testJoystick @52 :Joystick;
 
@@ -1536,5 +1545,109 @@ struct Event {
     gpsLocationDEPRECATED @21 :GpsLocationData;
     uiLayoutStateDEPRECATED @57 :Legacy.UiLayoutState;
     pandaStateDEPRECATED @12 :PandaState;
+  }
+}
+
+struct VagParam {
+  vagParamOp @0: VagParamOp;
+  vagParamGeneral @1: VagParamGeneral;
+  vagParamOsd @2: VagParamOsd;
+  vagParamTest @3: VagParamTest;
+  vagParamSetting @4: VagParamSetting;
+  vagParamFeature @5: VagParamFeature;
+  vagParamWarning @6: VagParamWarning;
+
+  # ===== OP toggle =====
+  struct VagParamOp {
+    experimentalLongitudinalEnabled @0 :Bool;
+    experimentalMode @1 :Bool;
+  }
+
+  # ===== General =====
+  struct VagParamGeneral {
+    isVagDevelopModeEnabled @0 :Bool;
+    isVagDevelopOnRoadUi @1 :Bool;
+    isVagRunningProcessLogEnabled @2 :Bool;
+    isVagParamFromCerealEnabled @3 :Bool;
+    isVagLeftBlinkerSoundEnabled @4 :Bool;
+    isVagRightBlinkerSoundEnabled @5 :Bool;
+  }
+
+  # ===== OSD =====
+  struct VagParamOsd {
+    isVagDebugBlinkerTest @0 :Bool;
+    isVagDebugBlindspotInfoTest @1 :Bool;
+    isVagDebugBlindspotWarningTest @2 :Bool;
+    isVagDebugBrakeLightTest @3 :Bool;
+    isVagDebugLeadCarGoingRemindTest @4 :Bool;
+    isVagDebugNoLeadCarWarningTest @5 :Bool;
+  }
+
+  # ===== Setting =====
+  struct VagParamSetting {
+    isVagManualSoundVolumeEnable @0 :Bool;
+    vagSoundVolume @1 :Int32;
+    isVagManualOsdBacklightEnable @2 :Bool;
+    vagOsdBacklight @3 :Int32;
+    isVagInfoBoxEnabled @4 :Bool;
+    isVagBlinkerEnabled @5 :Bool;
+    isVagBrakeLightEnabled @6 :Bool;
+    isVagLeadCarEnabled @7 :Bool;
+  }
+
+
+  # ===== Test =====
+  struct VagParamTest {
+    isVagDebugOsdTestTextEnabled @0 :Bool;
+    isVagRadarAccTestTextEnabled @1 :Bool;
+    isVagVisionAccTestTextEnabled @2 :Bool;
+    isVagDebugItem1Enabled @3 :Bool;
+    isVagDebugItem2Enabled @4 :Bool;
+    isVagDebugItem3Enabled @5 :Bool;
+    isVagDebugItem4Enabled @6 :Bool;
+    isVagDebugItem5Enabled @7 :Bool;
+  }
+
+  # ===== Feature =====
+  struct VagParamFeature {
+    # ----- Blindspot -----
+    isVagBlindspotEnabled @0 :Bool;
+    isVagBlindspotInfoSoundEnabled @1 :Bool;
+    isVagBlindspotInfoVibratorEnabled @2 :Bool;
+    isVagBlindspotWarningSoundEnabled @3 :Bool;
+    isVagBlindspotWarningVibratorEnabled @4 :Bool;
+    isVagBlindspotVibratorWithFlka @5 :Bool;
+    # ----- FLKA -----
+    isVagFulltimeLkaEnabled @6 :Bool;
+    isVagFulltimeLkaEnableWithBlinker @7 :Bool;
+    isVagFulltimeLkaEnableWithBrake @8 :Bool;
+    isVagFulltimeLkaEnableWithAssistant @9 :Bool;
+    # ----- Lead car going -----
+    isVagLeadCarGoingRemindEnabled @10 :Bool;
+    isVagLeadCarGoingRemindSoundEnabled @11 :Bool;
+    # ----- No lead car -----
+    isVagNoLeadCarEnabled @12 :Bool;
+    isVagNoLeadCarWarningSoundEnabled @13 :Bool;
+    # ----- Force disable startstop -----
+    isVagForceDisableStartstop @14 :Bool;
+    # ----- Driving Mode -----
+    isVagDrivingModeEnabled @15 :Bool;
+    vagDrivingMode @16 :Car.VagDrivingMode;
+    isVagDynamicDccEnabled @17 :Bool;
+  }
+
+  # ===== Warning =====
+  struct VagParamWarning {
+    isVagWarningEngineTurboPressure @0 :Bool;
+    isVagWarningEngineOilPressure @1 :Bool;
+    isVagWarningEngineInAirTemperature @2 :Bool;
+    isVagWarningEngineCoolantTemperature @3 :Bool;
+    isVagWarningEngineOilTemperature @4 :Bool;
+    isVagWarningCoolantTemperature @5 :Bool;
+    isVagWarningInAirPressure @6 :Bool;
+    isVagWarningGearOilTemperature @7 :Bool;
+    isVagWarningBrakePressure @8 :Bool;
+    isVagWarningIndoorTemperature @9 :Bool;
+    isVagWarningOutdoorTemperature @10 :Bool;
   }
 }
