@@ -38,6 +38,14 @@ sound_list: dict[int, tuple[str, int | None, float]] = {
 
   AudibleAlert.warningSoft: ("warning_soft.wav", None, MAX_VOLUME),
   AudibleAlert.warningImmediate: ("warning_immediate.wav", None, MAX_VOLUME),
+
+  #VAG
+  AudibleAlert.leftBlindspot: ("LeftBlindspot.wav", 1, MAX_VOLUME),
+  AudibleAlert.rightBlindspot: ("RightBlindspot.wav", 1, MAX_VOLUME),
+  AudibleAlert.leftBlinker: ("LeftBlinker.wav", 1, MAX_VOLUME),
+  AudibleAlert.rightBlinker: ("RightBlinker.wav", 1, MAX_VOLUME),
+  AudibleAlert.leadCarGoing: ("LearCarGoing.wav", 1, MAX_VOLUME),
+  AudibleAlert.noLeadCarWarning: ("NoLeadCar.wav", 1, MAX_VOLUME),
 }
 
 def check_controls_timeout_alert(sm):
@@ -71,7 +79,7 @@ class Soundd:
 
       wavefile = wave.open(BASEDIR + "/selfdrive/assets/sounds/" + filename, 'r')
 
-      assert wavefile.getnchannels() == 1
+      #assert wavefile.getnchannels() == 1
       assert wavefile.getsampwidth() == 2
       assert wavefile.getframerate() == SAMPLE_RATE
 
@@ -120,6 +128,92 @@ class Soundd:
     elif self.controls_timeout_alert:
       self.update_alert(AudibleAlert.none)
       self.controls_timeout_alert = False
+    if sm.updated['carState']:
+      self.check_vag_sound(sm)
+
+  def check_vag_sound(self, sm):
+    # ===== blindspot info =====
+    if sm['vagParam'].vagParamFeature.isVagBlindspotEnabled and sm['vagParam'].vagParamFeature.isVagBlindspotInfoSoundEnabled:
+      # ----- left blindspot warning -----
+      if sm['carState'].leftBlindspot:
+        if not self.leftBlindspotInfoSoundPlayed:
+          self.update_alert(AudibleAlert.leftBlindspot)
+        self.leftBlindspotInfoSoundPlayed = True
+      else:
+        self.leftBlindspotInfoSoundPlayed = False
+
+      # ----- right blindspot info -----
+      if sm['carState'].rightBlindspot:
+        if not self.rightBlindspotInfoSoundPlayed:
+          self.update_alert(AudibleAlert.rightBlindspot)
+        self.rightBlindspotInfoSoundPlayed = True
+      else:
+        self.rightBlindspotInfoSoundPlayed = False
+
+    # ===== blindspot warning =====
+    if sm['vagParam'].vagParamFeature.isVagBlindspotEnabled and sm['vagParam'].vagParamFeature.isVagBlindspotWarningSoundEnabled:
+      # ----- left blindspot warning -----
+      if sm['carState'].vagCarState.leftBlindspotWarning:
+        if not self.leftBlindspotWarningSoundPlayed:
+          self.update_alert(AudibleAlert.leftBlindspot)
+        self.leftBlindspotWarningSoundPlayed = True
+      else:
+        self.leftBlindspotWarningSoundPlayed = False
+
+      # ----- right blindspot warning -----
+      if sm['carState'].vagCarState.rightBlindspotWarning:
+        if not self.rightBlindspotWarningSoundPlayed:
+          self.update_alert(AudibleAlert.rightBlindspot)
+        self.rightBlindspotWarningSoundPlayed = True
+      else:
+        self.rightBlindspotWarningSoundPlayed = False
+
+    # ===== lead car going remind =====
+    if sm['vagParam'].vagParamFeature.isVagLeadCarGoingRemindEnabled and \
+        sm['vagParam'].vagParamFeature.isVagLeadCarGoingRemindSoundEnabled:
+      if sm['vagControl'].leadCarGoingTrigged:
+        if not self.leadCarGoingSoundPlayed:
+          self.update_alert(AudibleAlert.leadCarGoing)
+        self.leadCarGoingSoundPlayed = True
+      else:
+        self.leadCarGoingSoundPlayed = False
+
+    # ===== no lead car =====
+    if sm['vagParam'].vagParamFeature.isVagNoLeadCarEnabled and \
+         sm['vagParam'].vagParamFeature.isVagNoLeadCarWarningSoundEnabled and \
+         not sm['vagParam'].vagParamOp.experimentalLongitudinalEnabled and \
+         not sm['vagParam'].vagParamOp.experimentalMode:
+       accEnable = sm['carState'].cruiseState.enabled
+       accAbstandsindex = sm["carState"].vagCarState.vagUiField.accAbstandsindex
+       if accEnable and not accAbstandsindex:
+         if not self.NoLeadCarWarningSoundPlayed:
+           self.update_alert(AudibleAlert.noLeadCarWarning)
+         self.NoLeadCarWarningSoundPlayed = True;
+       else:
+         self.NoLeadCarWarningSoundPlayed = False;
+
+
+  #// ----- No lead car -----
+  #const bool isVagNoLeadCarEnabled = sm["vagParam"].getVagParam().getIsVagNoLeadCarEnabled();
+  #const bool isVagNoLeadCarWarningSoundEnabled = sm["vagParam"].getVagParam().getIsVagNoLeadCarWarningSoundEnabled();
+  #if(isVagNoLeadCarEnabled && isVagNoLeadCarWarningSoundEnabled) {
+  #  if (sm.updated("carState")) {
+  #    const bool accEnable = (bool) sm["carState"].getCarState().getCruiseState().getEnabled();
+  #    const int accAbstandsindex = (int) sm["carState"].getCarState().getVagUiField().getAccAbstandsindex();
+  #    //const bool steeringPressed = (bool) sm["carState"].getCarState().getSteeringPressed();
+  #    //const bool gasPressed = (bool) sm["carState"].getCarState().getGasPressed();
+  #    //const bool isDmActive = (bool) sm["driverMonitoringState"].getDriverMonitoringState().getIsActiveMode()
+  #    if (accEnable && accAbstandsindex == 0) {
+  #      if(!NoLeadCarWarningSoundPlayed) {
+  #        playSound(AudibleAlert::NO_LEAD_CAR_WARNING);
+  #      }
+  #      NoLeadCarWarningSoundPlayed = true;
+  #    } else {
+  #      NoLeadCarWarningSoundPlayed = false;
+  #    }
+  #  }
+  #}
+
 
   def calculate_volume(self, weighted_db):
     volume = ((weighted_db - AMBIENT_DB) / DB_SCALE) * (MAX_VOLUME - MIN_VOLUME) + MIN_VOLUME
@@ -136,7 +230,7 @@ class Soundd:
     # sounddevice must be imported after forking processes
     import sounddevice as sd
 
-    sm = messaging.SubMaster(['controlsState', 'microphone'])
+    sm = messaging.SubMaster(['controlsState', 'microphone', 'carState', 'vagParam', 'vagControl'])
 
     with self.get_stream(sd) as stream:
       rk = Ratekeeper(20)
