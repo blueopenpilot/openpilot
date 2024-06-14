@@ -1,3 +1,9 @@
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 SConscript(['pandad/SConscript'])
 SConscript(['controls/lib/lateral_mpc_lib/SConscript'])
 SConscript(['controls/lib/longitudinal_mpc_lib/SConscript'])
@@ -5,3 +11,4 @@ SConscript(['locationd/SConscript'])
 SConscript(['navd/SConscript'])
 SConscript(['modeld/SConscript'])
 SConscript(['ui/SConscript'])
+SConscript(['vag/SConscript'])

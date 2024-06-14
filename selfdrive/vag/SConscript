@@ -1,0 +1,9 @@
+Import('env', 'common', 'cereal', 'messaging')
+#Import('env', 'envCython', 'common', 'cereal', 'messaging')
+
+libs = ['usb-1.0', common, cereal, messaging, 'pthread', 'zmq', 'capnp', 'kj']
+
+env.Program('vagd', ['main.cc', 'vag.cc'], LIBS=libs)
+#env.Library('libcan_list_to_can_capnp', ['can_list_to_can_capnp.cc'])
+
+#envCython.Program(LIBS=["can_list_to_can_capnp", 'capnp', 'kj'] + envCython["LIBS"])
