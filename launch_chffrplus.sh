@@ -1,4 +1,9 @@
 #!/usr/bin/bash
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
 
 if [ -z "$BASEDIR" ]; then
   BASEDIR="/data/openpilot"
@@ -80,13 +85,45 @@ function launch {
 
   # write tmux scrollback to a file
   tmux capture-pane -pq -S-1000 > /tmp/launch_log
+  tmux new-window -n htop
+  tmux new-window -n tail_build
+  tmux new-window -n tail_launch
+  tmux new-window -n nano_build
+  tmux new-window -n nano_launch
+  tmux new-window -n shell
+  tmux send-keys -t htop "htop" Enter
+  tmux send-keys -t tail_build "./tail_build_log_last.sh"
+  tmux send-keys -t tail_launch "./tail_launch_log_last.sh"
+  tmux send-keys -t nano_build "./nano_build_log_last.sh"
+  tmux send-keys -t nano_launch "./nano_launch_log_last.sh"
+  mv /data/media/build_log_last.txt /data/media/build_log_last2.txt
+  mv /data/media/launch_log_last.txt /data/media/launch_log_last2.txt
 
   # start manager
   cd system/manager
-  if [ ! -f $DIR/prebuilt ]; then
-    ./build.py
+  #Pon: Dump log to file, add rebuild option
+  if [ -d "/data/media/0" ]; then
+    if [ -d "/data/media/0/log" ]; then
+      ##Pon: Waiting for time sync
+      #while [ ! $(date +"%Y") == 2024 ]
+      #do
+      #  date
+      #  sleep 1
+      #done
+      if [ -d "/data/media/0/build" ]; then
+        ./build.py > /data/media/0/log/build_log_$(date +"%Y%m%d_%H%M%S").txt && ./manager.py > /data/media/0/log/launch_log_$(date +"%Y%m%d_%H%M%S").txt
+      else
+        ./manager.py > /data/media/0/log/launch_log_$(date +"%Y%m%d_%H%M%S").txt
+      fi
+    fi
+  else
+    echo "[Warning] No SSD to save log!"
   fi
-  ./manager.py
+  if [ -d "/data/media/0/build" ]; then
+    ./build.py > /data/media/build_log_last.txt && ./manager.py > /data/media/launch_log_last.txt
+  else
+    ./manager.py > /data/media/launch_log_last.txt
+  fi
 
   # if broken, keep on screen error
   while true; do sleep 1; done
