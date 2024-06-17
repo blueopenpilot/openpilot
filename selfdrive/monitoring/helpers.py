@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+#
+# Copyright (c) 2020-2024 bluetulippon@gmail.com Chad_Peng(Pon).
+# All Rights Reserved.
+# Confidential and Proprietary - bluetulippon@gmail.com Chad_Peng(Pon).
+#
+
 from math import atan2
 
 from cereal import car
@@ -162,6 +169,7 @@ class DriverMonitoring:
     self._reset_awareness()
     self._set_timers(active_monitoring=True)
     self._reset_events()
+    self.sm = messaging.SubMaster(['vagParam'])
 
   def _reset_awareness(self):
     self.awareness = 1.
@@ -365,8 +373,12 @@ class DriverMonitoring:
       alert = EventName.preDriverDistracted if self.active_monitoring_mode else EventName.preDriverUnresponsive
 
     if alert is not None:
-      self.current_events.add(alert)
-
+      self.sm.update(0)
+      isVagDisableDriverMonitorAlert = self.sm['vagParam'].vagParamGeneral.isVagDisableDriverMonitorAlert
+      if isVagDisableDriverMonitorAlert:
+        print("[PONTEST][driver_monitor.py] alert=", alert)
+      else:
+        self.current_events.add(alert)
 
   def get_state_packet(self, valid=True):
     # build driverMonitoringState packet
