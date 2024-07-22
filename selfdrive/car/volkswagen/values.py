@@ -27,8 +27,12 @@ Button = namedtuple('Button', ['event_type', 'can_addr', 'can_msg', 'values'])
 class CarControllerParams:
   STEER_STEP = 2                           # HCA_01/HCA_1 message frequency 50Hz
   ACC_CONTROL_STEP = 2                     # ACC_06/ACC_07/ACC_System frequency 50Hz
+  BLINKMODI_02_STEP = 20                   # 5Hz
+  CHARISMA_01_STEP = 1                     # 100Hz
+  LICHT_ANF_01_STEP = 10                   # 10Hz
+  GATEWAY_72_STEP = 10                     # 10Hz
+  PARKHILFE_01_STEP = 10                   # 10Hz
   BCM_01_STEP = 100                        # 1Hz
-  CHARISMA_01_STEP = 1                     # 100 Hz
 
   # Documented lateral limits: 3.00 Nm max, rate of change 5.00 Nm/sec.
   # MQB vs PQ maximums are shared, but rate-of-change limited differently
@@ -118,6 +122,9 @@ class CANBUS:
   pt = 0
   body = 1
   cam = 2
+  vag_info = 4
+  vag_gb = 5
+  vag_pt = 6
 
 
 class WMI(StrEnum):

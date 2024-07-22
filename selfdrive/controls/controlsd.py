@@ -654,6 +654,13 @@ class Controls:
                                         and self.cruiseStateReadyForBlindspotVibrator \
                                         and (CS.vagCarState.leftBlindspotWarning or CS.vagCarState.rightBlindspotWarning))
 
+    # ----- isVagDebugItem1Enabled -----
+    CC.vagCarControl.enableLeftBlinker = self.sm['vagParam'].vagParamTest.isVagDebugItem1Enabled
+    # ----- isVagDebugItem2Enabled -----
+    CC.vagCarControl.enableRightBlinker = self.sm['vagParam'].vagParamTest.isVagDebugItem2Enabled
+    # ----- isVagDebugItem3Enabled -----
+    CC.vagCarControl.enableAreaView = self.sm['vagParam'].vagParamTest.isVagDebugItem3Enabled
+
     actuators = CC.actuators
     actuators.longControlState = self.LoC.long_control_state
 

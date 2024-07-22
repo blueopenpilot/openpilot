@@ -108,7 +108,10 @@ class CarInterfaceBase(ABC):
     self.cp_adas = self.CS.get_adas_can_parser(CP)
     self.cp_body = self.CS.get_body_can_parser(CP)
     self.cp_loopback = self.CS.get_loopback_can_parser(CP)
-    self.can_parsers = [self.cp, self.cp_cam, self.cp_adas, self.cp_body, self.cp_loopback]
+    self.cp_vag_info = self.CS.get_info_can_parser(CP)
+    self.cp_vag_gb = self.CS.get_gb_can_parser(CP)
+    self.cp_vag_pt = self.CS.get_pt_can_parser(CP)
+    self.can_parsers = [self.cp, self.cp_cam, self.cp_adas, self.cp_body, self.cp_loopback, self.cp_vag_info, self.cp_vag_gb, self.cp_vag_pt]
 
     dbc_name = "" if self.cp is None else self.cp.dbc_name
     self.CC: CarControllerBase = CarController(dbc_name, CP, self.VM)
@@ -472,6 +475,30 @@ class CarStateBase(ABC):
   def get_loopback_can_parser(CP):
     return None
 
+##### VAG #####
+  @staticmethod
+  def get_info_can_parser(CP):
+    return None
+
+  @staticmethod
+  def get_diag_can_parser(CP):
+    return None
+
+  @staticmethod
+  def get_gb_can_parser(CP):
+    return None
+
+  @staticmethod
+  def get_ext_can_parser(CP):
+    return None
+
+  @staticmethod
+  def get_pt_can_parser(CP):
+    return None
+
+  @staticmethod
+  def get_cv_can_parser(CP):
+    return None
 
 SendCan = tuple[int, int, bytes, int]
 

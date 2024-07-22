@@ -273,3 +273,64 @@ def create_charisma_01_control(packer, bus, charisma_01_value, charisma_07_value
           })
   return packer.make_can_msg("Charisma_01", bus, values)
 
+def create_blinkmodi_02_control(packer, bus, blinkmodi_02_value, left_blinker, right_blinker):
+  values = blinkmodi_02_value
+
+  if left_blinker:
+    values.update({
+      #"Hazard_Switch": 1,
+      "Comfort_Signal_Left": 1,
+      #"Left_Turn_Exterior_Bulb_1": 1,
+      #"Left_Turn_Exterior_Bulb_2": 1,
+      "Fast_Send_Rate_Active": 1,
+    })
+
+  if right_blinker:
+    values.update({
+      #"Hazard_Switch": 1,
+      "Comfort_Signal_Right": 1,
+      #"Right_Turn_Exterior_Bulb_1": 1,
+      #"Right_Turn_Exterior_Bulb_2": 1,
+      "Fast_Send_Rate_Active": 1,
+    })
+  return packer.make_can_msg("Blinkmodi_02", bus, values)
+
+def create_licht_anf_01_control(packer, bus, licht_anf_01_value, left_blinker, right_blinker):
+  values = licht_anf_01_value
+
+  if left_blinker:
+    values.update({
+      "BCM1_Kurvenlicht_links_Anf": 1,
+    })
+
+  if right_blinker:
+    values.update({
+      "BCM1_Kurvenlicht_rechts_Anf": 1,
+    })
+
+  return packer.make_can_msg("Licht_Anf_01", bus, values)
+
+def create_gateway_72_control(packer, bus, gateway_72_value, left_blinker, right_blinker):
+  values = gateway_72_value
+
+  if left_blinker:
+    values.update({
+      "BH_Blinker_li": 1,
+    })
+
+  if right_blinker:
+    values.update({
+      "BH_Blinker_re": 1,
+    })
+
+  return packer.make_can_msg("Gateway_72", bus, values)
+
+def create_parkhilfe_01_control(packer, bus, parkhilfe_01_value):
+  values = parkhilfe_01_value
+
+  values.update({
+    "PH_Abschaltursache": 0, #VAL_ 1175 PH_Abschaltursache 0 "keine, bzw. System aktiv" 1 "Abschaltung durch Herausnahme R-Gang" 2 "Abschaltung ueber Geschwindigkeit" 3 "Abschaltung ueber PDC-Taster" 4 "Abschaltung wegen PLA" 5 "Abschaltung durch KL 15 Bit = 0" 6 "tbd." 7 "Fehler-/gest�rt Zustand, System noch aktiv";
+    "PH_Tongeber_mute": 1,
+    "PH_Taster": 1, #VAL_ 1175 PH_Taster 0 "Taster_nicht_gedrueckt" 1 "Taster_gedrueckt" 2 "reserviert" 3 "Fehler";
+  })
+  return packer.make_can_msg("Parkhilfe_01", bus, values)

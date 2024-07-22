@@ -15,6 +15,7 @@
 #include "safety/safety_mazda.h"
 #include "safety/safety_nissan.h"
 #include "safety/safety_volkswagen_mqb.h"
+#include "safety/safety_volkswagen_mqb_panda2.h"
 #include "safety/safety_volkswagen_pq.h"
 #include "safety/safety_elm327.h"
 #include "safety/safety_body.h"
@@ -51,6 +52,7 @@
 #define SAFETY_FAW 26U
 #define SAFETY_BODY 27U
 #define SAFETY_HYUNDAI_CANFD 28U
+#define SAFETY_VOLKSWAGEN_MQB_PANDA2 32U
 
 uint16_t current_safety_mode = SAFETY_SILENT;
 uint16_t current_safety_param = 0;
@@ -314,6 +316,7 @@ const safety_hook_config safety_hook_registry[] = {
   {SAFETY_CHRYSLER, &chrysler_hooks},
   {SAFETY_SUBARU, &subaru_hooks},
   {SAFETY_VOLKSWAGEN_MQB, &volkswagen_mqb_hooks},
+  {SAFETY_VOLKSWAGEN_MQB_PANDA2, &volkswagen_mqb_panda2_hooks},
   {SAFETY_NISSAN, &nissan_hooks},
   {SAFETY_NOOUTPUT, &nooutput_hooks},
   {SAFETY_HYUNDAI_LEGACY, &hyundai_legacy_hooks},

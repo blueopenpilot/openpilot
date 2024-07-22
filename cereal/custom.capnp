@@ -53,6 +53,9 @@ struct VagCarControl @0xaedffd8f31e7b55d {
   vagDrivingMode @5 :VagDrivingMode;
   enableVagDynamicDcc @6 :Bool;
   vagAudibleAlert @7 :VagAudibleAlert;
+  enableLeftBlinker @8 :Bool;
+  enableRightBlinker @9 :Bool;
+  enableAreaView @10: Bool;
 
   enum VagDrivingMode {
     notSet @0;
@@ -87,18 +90,47 @@ struct VagCarParams @0xf35cc4560bbf6ec2 {
   vagCanModule @0 :VagCanModule;
 
   struct VagCanModule {
-    bus0Motor07 @0 :Bool;
-    bus0VehicleSpeed @1 :Bool;
-    bus0Bcm01 @2: Bool;
-    bus0Kombi02 @3: Bool;
-    bus0Motor18 @4: Bool;
-    bus0Charisma01 @5: Bool;
-    bus0Charisma07 @6: Bool;
-    bus1Getriebe14 @7: Bool;
-    bus1Motor12 @8: Bool;
-    bus1Motor09 @9: Bool;
-    bus1Obd01 @10: Bool;
-    bus1Motor04 @11: Bool;
+    bus0 @0 :Bus0;
+    bus1 @1 :Bus1;
+    bus2 @2 :Bus2;
+    bus3 @3 :Bus3;
+    bus4 @4 :Bus4;
+    bus5 @5 :Bus5;
+    bus6 @6 :Bus6;
+
+    #----- bus 0 -----
+    struct Bus0 {
+      vehicleSpeed @0 :Bool;
+      charisma01 @1: Bool;
+      charisma07 @2: Bool;
+      motor07 @3 :Bool;
+      bcm01 @4: Bool;
+      motor18 @5: Bool;
+      kombi02 @6: Bool;
+    }
+    #----- bus 1 -----
+    struct Bus1 {
+      motor12 @0: Bool;
+      motor04 @1: Bool;
+      obd01 @2: Bool;
+      getriebe14 @3: Bool;
+      motor09 @4: Bool;
+    }
+    #----- bus 2 -----
+    struct Bus2 {
+    }
+    #----- bus 3 -----
+    struct Bus3 {
+    }
+    #----- bus 4 -----
+    struct Bus4 {
+    }
+    #----- bus 5 -----
+    struct Bus5 {
+    }
+    #----- bus 6 -----
+    struct Bus6 {
+    }
   }
 }
 

@@ -32,16 +32,24 @@ const LongitudinalLimits VOLKSWAGEN_MQB_LONG_LIMITS = {
 #define MSG_ACC_02                  0x30C   // TX by OP, ACC HUD data to the instrument cluster
 #define MSG_MOTOR_14                0x3BE   // RX from ECU, for brake switch status
 #define MSG_LDW_02                  0x397   // TX by OP, Lane line recognition and text alerts
-#define MSG_BCM_01                  1626
+#define MSG_BLINKMODI_02            870
 #define MSG_CHARISMA_01             901
+#define MSG_LICHT_ANF_01            981
+#define MSG_GATEWAY_72              987
+#define MSG_PARKHILFE_01            1175
+#define MSG_BCM_01                  1626
 
 // Transmit of GRA_ACC_01 is allowed on bus 0 and 2 to keep compatibility with gateway and camera integration
-const CanMsg VOLKSWAGEN_MQB_STOCK_TX_MSGS[] = {{MSG_HCA_01, 0, 8}, {MSG_GRA_ACC_01, 0, 8}, {MSG_GRA_ACC_01, 2, 8},
-                                               {MSG_BCM_01, 1, 8}, {MSG_CHARISMA_01, 1, 8},
-                                               {MSG_LDW_02, 0, 8}, {MSG_LH_EPS_03, 2, 8}};
-const CanMsg VOLKSWAGEN_MQB_LONG_TX_MSGS[] = {{MSG_HCA_01, 0, 8}, {MSG_LDW_02, 0, 8}, {MSG_LH_EPS_03, 2, 8},
-                                              {MSG_BCM_01, 1, 8}, {MSG_CHARISMA_01, 1, 8},
-                                              {MSG_ACC_02, 0, 8}, {MSG_ACC_06, 0, 8}, {MSG_ACC_07, 0, 8}};
+const CanMsg VOLKSWAGEN_MQB_STOCK_TX_MSGS[] = { {MSG_HCA_01, 0, 8}, {MSG_GRA_ACC_01, 0, 8}, {MSG_GRA_ACC_01, 2, 8},
+                                                {MSG_CHARISMA_01, 1, 8},
+                                                {MSG_BCM_01, 1, 8},
+                                                {MSG_LDW_02, 0, 8}, {MSG_LH_EPS_03, 2, 8}
+                                              };
+const CanMsg VOLKSWAGEN_MQB_LONG_TX_MSGS[] = {  {MSG_HCA_01, 0, 8}, {MSG_LDW_02, 0, 8}, {MSG_LH_EPS_03, 2, 8},
+                                                {MSG_CHARISMA_01, 1, 8},
+                                                {MSG_BCM_01, 1, 8},
+                                                {MSG_ACC_02, 0, 8}, {MSG_ACC_06, 0, 8}, {MSG_ACC_07, 0, 8}
+                                             };
 
 RxCheck volkswagen_mqb_rx_checks[] = {
   {.msg = {{MSG_ESP_19, 0, 8, .check_checksum = false, .max_counter = 0U, .frequency = 100U}, { 0 }, { 0 }}},

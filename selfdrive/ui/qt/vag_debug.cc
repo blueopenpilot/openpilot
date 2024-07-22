@@ -271,8 +271,8 @@ VagTestPanel::VagTestPanel(QWidget* parent) : ListWidget(parent) {
 
 void VagTestPanel::showEvent(QShowEvent *event) {
   UIState *s = uiState();
-  const bool bus0Charisma01 = (*s->sm)["carParams"].getCarParams().getVagCarParams().getVagCanModule().getBus0Charisma01();
-  const bool bus0Charisma07 = (*s->sm)["carParams"].getCarParams().getVagCarParams().getVagCanModule().getBus0Charisma07();
+  const bool bus0Charisma01 = (*s->sm)["carParams"].getCarParams().getVagCarParams().getVagCanModule().getBus0().getCharisma01();
+  const bool bus0Charisma07 = (*s->sm)["carParams"].getCarParams().getVagCarParams().getVagCanModule().getBus0().getCharisma07();
   if(bus0Charisma01 && bus0Charisma07) {
     mParamControlIsVagDynamicDccEnabled->setEnabled(true);
     mParamControlIsVagDrivingModeEnabled->setEnabled(true);
@@ -635,8 +635,8 @@ void VagFeaturePanel::showEvent(QShowEvent *event) {
   mParamControlIsVagNoLeadCarWarningSoundEnabled->setToggleVisible(IsVagNoLeadCarEnabled);
 
   UIState *s = uiState();
-  const bool bus0Bcm01 = (*s->sm)["carParams"].getCarParams().getVagCarParams().getVagCanModule().getBus0Bcm01();
-  const bool bus0Motor18 = (*s->sm)["carParams"].getCarParams().getVagCarParams().getVagCanModule().getBus0Motor18();
+  const bool bus0Bcm01 = (*s->sm)["carParams"].getCarParams().getVagCarParams().getVagCanModule().getBus0().getBcm01();
+  const bool bus0Motor18 = (*s->sm)["carParams"].getCarParams().getVagCarParams().getVagCanModule().getBus0().getMotor18();
   if(bus0Bcm01 && bus0Motor18) {
     mParamControlIsVagForceDisableStartstop->setEnabled(true);
   } else {

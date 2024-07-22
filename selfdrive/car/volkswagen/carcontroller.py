@@ -38,15 +38,15 @@ class CarController(CarControllerBase):
     hud_control = CC.hudControl
     can_sends = []
 
-    ###### BCM_01 #####
-    if self.CP.vagCarParams.vagCanModule.bus0Bcm01 and self.CP.vagCarParams.vagCanModule.bus0Motor18:
+    ##### BCM_01 #####
+    if self.CP.vagCarParams.vagCanModule.bus0.bcm01 and self.CP.vagCarParams.vagCanModule.bus0.motor18:
       if CC.vagCarControl.disableVagStartStop:
         if self.frame % self.CCP.BCM_01_STEP == 0:
           if CS.motor_18["MO_Hybrid_StartStopp_LED"] == 0:
             can_sends.append(self.CCS.create_bcm_01_control(self.packer_pt, CANBUS.body, CS.bcm_01, True))
 
-    ###### CHARISMA_01 #####
-    if self.CP.vagCarParams.vagCanModule.bus0Charisma01 and self.CP.vagCarParams.vagCanModule.bus0Charisma07:
+    ##### CHARISMA_01 #####
+    if self.CP.vagCarParams.vagCanModule.bus0.charisma01 and self.CP.vagCarParams.vagCanModule.bus0.charisma07:
       if CC.vagCarControl.enableVagDrivingMode or CC.vagCarControl.enableVagDynamicDcc:
         if self.frame % self.CCP.CHARISMA_01_STEP == 0:
           can_sends.append(self.CCS.create_charisma_01_control(self.packer_pt, CANBUS.body, CS.charisma_01, CS.charisma_07, CC.vagCarControl.enableVagDrivingMode, CC.vagCarControl.vagDrivingMode, CC.vagCarControl.enableVagDynamicDcc, CS.out.vagCarState.vagUiField.speed, CS.out.steeringAngleDeg))

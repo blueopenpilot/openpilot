@@ -59,7 +59,7 @@ class CarInterface(CarInterfaceBase):
       #print("[BOP][interface.py][_get_params] fingerprint[1]=", fingerprint[1])
       #print("[BOP][interface.py][_get_params] fingerprint[2]=", fingerprint[2])
 
-      ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.volkswagen)]
+      ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.volkswagen), get_safety_config(car.CarParams.SafetyModel.volkswagenMqbPanda2)]
       ret.enableBsm = 0x30F in fingerprint[0]  # SWA_01
 
       if 0xAD in fingerprint[0] or docs:  # Getriebe_11
@@ -78,20 +78,25 @@ class CarInterface(CarInterfaceBase):
         ret.flags |= VolkswagenFlags.STOCK_HCA_PRESENT.value
 
       #VAG
-      #===== Bus 0 =====
-      ret.vagCarParams.vagCanModule.bus0Motor07 = 1600 in fingerprint[0]
-      ret.vagCarParams.vagCanModule.bus0VehicleSpeed = 286 in fingerprint[0]
-      ret.vagCarParams.vagCanModule.bus0Bcm01 = 1626 in fingerprint[0]
-      ret.vagCarParams.vagCanModule.bus0Kombi02 = 1719 in fingerprint[0]
-      ret.vagCarParams.vagCanModule.bus0Motor18 = 1648 in fingerprint[0]
-      ret.vagCarParams.vagCanModule.bus0Charisma01 = 901 in fingerprint[0]
-      ret.vagCarParams.vagCanModule.bus0Charisma07 = 1000 in fingerprint[0]
-      #===== Bus 1 =====
-      ret.vagCarParams.vagCanModule.bus1Getriebe14 = 968 in fingerprint[1]
-      ret.vagCarParams.vagCanModule.bus1Motor12 = 168 in fingerprint[1]
-      ret.vagCarParams.vagCanModule.bus1Motor09 = 1607 in fingerprint[1]
-      ret.vagCarParams.vagCanModule.bus1Obd01 = 913 in fingerprint[1]
-      ret.vagCarParams.vagCanModule.bus1Motor04 = 263 in fingerprint[1]
+      #===== Bus 0 (ext can from vehicle) =====
+      ret.vagCarParams.vagCanModule.bus0.vehicleSpeed = 286 in fingerprint[0]
+      ret.vagCarParams.vagCanModule.bus0.charisma01 = 901 in fingerprint[0]
+      ret.vagCarParams.vagCanModule.bus0.charisma07 = 1000 in fingerprint[0]
+      ret.vagCarParams.vagCanModule.bus0.motor07 = 1600 in fingerprint[0]
+      ret.vagCarParams.vagCanModule.bus0.bcm01 = 1626 in fingerprint[0]
+      ret.vagCarParams.vagCanModule.bus0.motor18 = 1648 in fingerprint[0]
+      ret.vagCarParams.vagCanModule.bus0.kombi02 = 1719 in fingerprint[0]
+      #===== Bus 1 (cv can) =====
+      ret.vagCarParams.vagCanModule.bus1.motor12 = 168 in fingerprint[1]
+      ret.vagCarParams.vagCanModule.bus1.motor04 = 263 in fingerprint[1]
+      ret.vagCarParams.vagCanModule.bus1.obd01 = 913 in fingerprint[1]
+      ret.vagCarParams.vagCanModule.bus1.getriebe14 = 968 in fingerprint[1]
+      ret.vagCarParams.vagCanModule.bus1.motor09 = 1607 in fingerprint[1]
+      #===== Bus 2 (ext can from camera) =====
+      #===== Bus 3 (should be dia can)
+      #===== Bus 4 (info can) =====
+      #===== Bus 5 (gb can) =====
+      #===== Bus 6 (pt can) =====
 
     # Global lateral tuning defaults, can be overridden per-vehicle
 
@@ -130,7 +135,7 @@ class CarInterface(CarInterfaceBase):
 
   # returns a car.CarState
   def _update(self, c):
-    ret = self.CS.update(self.cp, self.cp_cam, self.cp_ext, self.cp_body, self.CP.transmissionType)
+    ret = self.CS.update(self.cp, self.cp_cam, self.cp_ext, self.cp_body, self.cp_vag_info, self.cp_vag_gb, self.cp_vag_pt, self.CP.transmissionType)
 
     events = self.create_common_events(ret, extra_gears=[GearShifter.eco, GearShifter.sport, GearShifter.manumatic],
                                        pcm_enable=not self.CS.CP.openpilotLongitudinalControl,

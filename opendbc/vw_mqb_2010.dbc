@@ -1468,7 +1468,34 @@ BO_ 988 Gateway_73: 8 XXX
 
 BO_ 792 Kamera_Status: 8 XXX
 
-BO_ 981 Licht_Anf_01: 8 XXX
+BO_ 981 Licht_Anf_01: 8 Vector__XXX
+ SG_ Licht_Anf_01_CRC : 0|8@1+ (1,0) [0|255] "" Vector__XXX
+ SG_ Licht_Anf_01_BZ : 8|4@1+ (1,0) [0|15] "" Vector__XXX
+ SG_ BCM1_Kurvenlicht_links_Anf : 12|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Kurvenlicht_rechts_Anf : 13|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Standlicht_Anf : 14|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Abblendlicht_Anf : 15|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Fernlicht_Anf : 16|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Nebellicht_Anf : 17|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Parklicht_li_Anf : 18|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Parklicht_re_Anf : 19|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Nebelschluss_Ahg_Anf : 20|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Nebelschluss_Fzg_Anf : 21|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Schlusslicht_Anf : 22|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM_Rueckfahrlicht_Anf : 23|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Signaturlicht_Anf : 24|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Umfeldleuchten_Anf : 25|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Tagfahrlicht_Anf : 26|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Regenlicht_Anf : 27|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Autobahnlicht_Anf : 28|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Touristen_Licht_Anf : 29|1@1+ (1,0) [0|1] ""  Frontsensorik
+ SG_ BCM1_CH_aktiv : 30|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_LH_aktiv : 31|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Gleitende_Leuchtw_Anf : 32|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_GLW_Fernlicht_Anf : 33|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Adaptive_Lichtvert_Anf : 34|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_CH_LH_aktiv : 40|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ BCM1_Allwetterlicht_Anf : 41|1@1+ (1,0) [0|1] ""  Frontsensorik
 
 BO_ 1440 RLS_01: 8 XXX
 

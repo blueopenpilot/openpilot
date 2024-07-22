@@ -88,7 +88,7 @@ class CarState(CarStateBase):
 
     return button_events
 
-  def update(self, pt_cp, cam_cp, ext_cp, body_cp, trans_type):
+  def update(self, pt_cp, cam_cp, ext_cp, body_cp, vag_info_cp, vag_gb_cp, vag_pt_cp, trans_type):
     if self.CP.flags & VolkswagenFlags.PQ:
       return self.update_pq(pt_cp, cam_cp, ext_cp, trans_type)
 
@@ -162,20 +162,20 @@ class CarState(CarStateBase):
 
     #VAG
     # ----- Motor_04 -----
-    if self.CP.vagCarParams.vagCanModule.bus1Motor04:
+    if self.CP.vagCarParams.vagCanModule.bus1.motor04:
       ret.vagCarState.vagUiField.moIstgang                  = body_cp.vl["Motor_04"]["MO_Istgang"]
       ret.vagCarState.vagUiField.moLadedruck                = body_cp.vl["Motor_04"]["MO_Ladedruck"] #0~5.10 Bar
       ret.vagCarState.vagUiField.moOeldruck                 = body_cp.vl["Motor_04"]["MO_Oeldruck"] #0~10.00 Bar
     # ----- Motor_07 -----
-    if self.CP.vagCarParams.vagCanModule.bus0Motor07:
+    if self.CP.vagCarParams.vagCanModule.bus0.motor07:
       ret.vagCarState.vagUiField.moAnsaugluftTemp           = pt_cp.vl["Motor_07"]["MO_Ansaugluft_Temp"] #-48~141.75 DegreCelsi
       ret.vagCarState.vagUiField.moKuehlmittelTemp          = pt_cp.vl["Motor_07"]["MO_Kuehlmittel_Temp"] #-48~141.75 DegreCelsi
       ret.vagCarState.vagUiField.moOelTemp                  = pt_cp.vl["Motor_07"]["MO_Oel_Temp"] #-60~192 DegreCelsi
     # ----- Motor_09 -----
-    if self.CP.vagCarParams.vagCanModule.bus1Motor09:
+    if self.CP.vagCarParams.vagCanModule.bus1.motor09:
       ret.vagCarState.vagUiField.moItmKuehlmittelTemp       = body_cp.vl["Motor_09"]["MO_ITM_Kuehlmittel_Temp"] #-45.75~143.25 DegreCelsi
     # ----- Motor_18 -----
-    if self.CP.vagCarParams.vagCanModule.bus0Motor18:
+    if self.CP.vagCarParams.vagCanModule.bus0.motor18:
       ret.vagCarState.vagUiField.moMaxLadedruck             = pt_cp.vl["Motor_18"]["MO_max_Ladedruck"] #0~6.3 Bar
     # ----- Motor_20 -----
     ret.vagCarState.vagUiField.moRelSaugrohrdruck           = pt_cp.vl["Motor_20"]["MO_rel_Saugrohrdruck"] #0~1.116 Bar
@@ -188,7 +188,7 @@ class CarState(CarStateBase):
       except Exception:
         print("[BOP][carstate.py] exception to set vagCarState.vagUiField.geZielgang")
     # ----- Getriebe_14 -----
-    if self.CP.vagCarParams.vagCanModule.bus1Getriebe14:
+    if self.CP.vagCarParams.vagCanModule.bus1.getriebe14:
       ret.vagCarState.vagUiField.geSumpftemperatur          = body_cp.vl["Getriebe_14"]["GE_Sumpftemperatur"] #-58~196 DegreCelsi
     # ----- ESP_05 -----
     ret.vagCarState.vagUiField.espBremsdruck                = pt_cp.vl["ESP_05"]["ESP_Bremsdruck"] #-30~276.6 Bar
@@ -196,36 +196,36 @@ class CarState(CarStateBase):
     # ----- Gateway_72 -----
     ret.vagCarState.vagUiField.bcm1AussenTempUngef          = pt_cp.vl["Gateway_72"]["BCM1_Aussen_Temp_ungef"] #-50~76.0 DegreCelsi
     # ----- OBD_01 -----
-    if self.CP.vagCarParams.vagCanModule.bus1Obd01:
+    if self.CP.vagCarParams.vagCanModule.bus1.obd01:
       ret.vagCarState.vagUiField.obdEngCoolTemp             = body_cp.vl["OBD_01"]["OBD_Eng_Cool_Temp"] #-40~215 DegreCelsi
     # ----- Kombi_02 -----
-    if self.CP.vagCarParams.vagCanModule.bus0Kombi02:
+    if self.CP.vagCarParams.vagCanModule.bus0.kombi02:
       ret.vagCarState.vagUiField.kbiAussenTempGef           = pt_cp.vl["Kombi_02"]["KBI_Aussen_Temp_gef"] #-50~75.0 DegreCelsi
     # ----- ACC_02 -----
     ret.vagCarState.vagUiField.accAbstandsindex             = ext_cp.vl["ACC_02"]["ACC_Abstandsindex"]
     # ----- VehicleSpeed -----
     #Pon: For panda jungle develop
     if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
-      if self.CP.vagCarParams.vagCanModule.bus1Motor04:
+      if self.CP.vagCarParams.vagCanModule.bus1.motor04:
         try:
           ret.vagCarState.vagUiField.speed                    = pt_cp.vl["VehicleSpeed"]["Speed"] #Km/H
         except Exception:
           print("[BOP][carstate.py] exception to set vagCarState.vagUiField.speed")
 
     # ----- Motor_12 -----
-    if self.CP.vagCarParams.vagCanModule.bus1Motor12:
+    if self.CP.vagCarParams.vagCanModule.bus1.motor12:
       ret.engineRpm                             = body_cp.vl["Motor_12"]["MO_Drehzahl_01"]
 
     ##### VAG Force disable startstop #####
-    if self.CP.vagCarParams.vagCanModule.bus0Bcm01:
+    if self.CP.vagCarParams.vagCanModule.bus0.bcm01:
       self.bcm_01 = pt_cp.vl["BCM_01"]
-    if self.CP.vagCarParams.vagCanModule.bus0Motor18:
+    if self.CP.vagCarParams.vagCanModule.bus0.motor18:
       self.motor_18 = pt_cp.vl["Motor_18"]
 
     ##### VAG Driving mode #####
-    if self.CP.vagCarParams.vagCanModule.bus0Charisma01:
+    if self.CP.vagCarParams.vagCanModule.bus0.charisma01:
       self.charisma_01 = pt_cp.vl["Charisma_01"]
-    if self.CP.vagCarParams.vagCanModule.bus0Charisma07:
+    if self.CP.vagCarParams.vagCanModule.bus0.charisma07:
       self.charisma_07 = pt_cp.vl["Charisma_07"]
 
     # Consume factory LDW data relevant for factory SWA (Lane Change Assist)
@@ -391,26 +391,6 @@ class CarState(CarStateBase):
     return temp_fault, perm_fault
 
   @staticmethod
-  def get_body_can_parser(CP): #can bus 1
-    messages = [
-      # sig_address, frequency
-    ]
-    #VAG
-    #if CP.carFingerprint in (CAR.SKODA_KODIAQ_MK1):
-    if CP.vagCarParams.vagCanModule.bus1Getriebe14:
-      messages += MqbExtraSignals.getriebe_14_message
-    if CP.vagCarParams.vagCanModule.bus1Motor12:
-      messages += MqbExtraSignals.motor_12_message
-    if CP.vagCarParams.vagCanModule.bus1Motor09:
-      messages += MqbExtraSignals.motor_09_message
-    if CP.vagCarParams.vagCanModule.bus1Obd01:
-      messages += MqbExtraSignals.obd_01_message
-    if CP.vagCarParams.vagCanModule.bus1Motor04:
-      messages += MqbExtraSignals.motor_04_message
-
-    return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.body)
-
-  @staticmethod
   def get_can_parser(CP): #can bus 0
     if CP.flags & VolkswagenFlags.PQ:
       return CarState.get_can_parser_pq(CP)
@@ -447,21 +427,20 @@ class CarState(CarStateBase):
 
     #VAG
     #if CP.carFingerprint in (CAR.SKODA_KODIAQ_MK1):
-    if CP.vagCarParams.vagCanModule.bus0Motor07:
+    if CP.vagCarParams.vagCanModule.bus0.motor07:
       messages += MqbExtraSignals.motor_07_message
-    if CP.vagCarParams.vagCanModule.bus0VehicleSpeed:
+    if CP.vagCarParams.vagCanModule.bus0.vehicleSpeed:
       messages += MqbExtraSignals.vehicle_speed_message
-    if CP.vagCarParams.vagCanModule.bus0Bcm01:
+    if CP.vagCarParams.vagCanModule.bus0.bcm01:
       messages += MqbExtraSignals.bcm_01_message
-    if CP.vagCarParams.vagCanModule.bus0Kombi02:
+    if CP.vagCarParams.vagCanModule.bus0.kombi02:
       messages += MqbExtraSignals.kombi_02_message
-    if CP.vagCarParams.vagCanModule.bus0Motor18:
+    if CP.vagCarParams.vagCanModule.bus0.motor18:
       messages += MqbExtraSignals.motor_18_message
-    if CP.vagCarParams.vagCanModule.bus0Charisma01:
+    if CP.vagCarParams.vagCanModule.bus0.charisma01:
       messages += MqbExtraSignals.charisma_01_message
-    if CP.vagCarParams.vagCanModule.bus0Charisma07:
+    if CP.vagCarParams.vagCanModule.bus0.charisma07:
       messages += MqbExtraSignals.charisma_07_message
-
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.pt)
 
   @staticmethod
@@ -488,6 +467,47 @@ class CarState(CarStateBase):
         messages += MqbExtraSignals.bsm_radar_messages
 
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.cam)
+
+  @staticmethod
+  def get_body_can_parser(CP): #can bus 1
+    messages = [
+      # sig_address, frequency
+    ]
+    #VAG
+    #if CP.carFingerprint in (CAR.SKODA_KODIAQ_MK1):
+    if CP.vagCarParams.vagCanModule.bus1.getriebe14:
+      messages += MqbExtraSignals.getriebe_14_message
+    if CP.vagCarParams.vagCanModule.bus1.motor12:
+      messages += MqbExtraSignals.motor_12_message
+    if CP.vagCarParams.vagCanModule.bus1.motor09:
+      messages += MqbExtraSignals.motor_09_message
+    if CP.vagCarParams.vagCanModule.bus1.obd01:
+      messages += MqbExtraSignals.obd_01_message
+    if CP.vagCarParams.vagCanModule.bus1.motor04:
+      messages += MqbExtraSignals.motor_04_message
+
+    return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.body)
+
+  @staticmethod
+  def get_info_can_parser(CP): #can bus 4
+    messages = [
+      # sig_address, frequency
+    ]
+    return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.vag_info)
+
+  @staticmethod
+  def get_gb_can_parser(CP): #can bus 5
+    messages = [
+      # sig_address, frequency
+    ]
+    return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.vag_gb)
+
+  @staticmethod
+  def get_pt_can_parser(CP): #can bus 6
+    messages = [
+      # sig_address, frequency
+    ]
+    return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.vag_pt)
 
   @staticmethod
   def get_can_parser_pq(CP):
@@ -587,6 +607,18 @@ class MqbExtraSignals:
   ]
   motor_04_message = [
     ("Motor_04", 1),
+  ]
+  blinkmodi_02_message = [
+    ("Blinkmodi_02", 5),
+  ]
+  parkhilfe_01_message = [
+    ("Parkhilfe_01", 10),
+  ]
+  licht_anf_01_message = [
+    ("Licht_Anf_01", 10),
+  ]
+  gateway_72_message = [
+    ("Gateway_72", 10),
   ]
 
 class PqExtraSignals:
