@@ -80,21 +80,33 @@ class CarInterface(CarInterfaceBase):
       #VAG
       #===== Bus 0 (ext can from vehicle) =====
       ret.vagCarParams.vagCanModule.bus0.vehicleSpeed = 286 in fingerprint[0]
+      ret.vagCarParams.vagCanModule.bus0.blinkmodi02 = 870 in fingerprint[0]
+      #ret.vagCarParams.vagCanModule.bus0.msg896 = 896 in fingerprint[0]
+      #ret.vagCarParams.vagCanModule.bus0.msg898 = 898 in fingerprint[0]
       ret.vagCarParams.vagCanModule.bus0.charisma01 = 901 in fingerprint[0]
+      #ret.vagCarParams.vagCanModule.bus0.lichtAnf01 = 981 in fingerprint[0]
       ret.vagCarParams.vagCanModule.bus0.charisma07 = 1000 in fingerprint[0]
+      #ret.vagCarParams.vagCanModule.bus0.parkhilfe01 = 1175 in fingerprint[0]
       ret.vagCarParams.vagCanModule.bus0.motor07 = 1600 in fingerprint[0]
       ret.vagCarParams.vagCanModule.bus0.bcm01 = 1626 in fingerprint[0]
       ret.vagCarParams.vagCanModule.bus0.motor18 = 1648 in fingerprint[0]
       ret.vagCarParams.vagCanModule.bus0.kombi02 = 1719 in fingerprint[0]
+
       #===== Bus 1 (cv can) =====
       ret.vagCarParams.vagCanModule.bus1.motor12 = 168 in fingerprint[1]
       ret.vagCarParams.vagCanModule.bus1.motor04 = 263 in fingerprint[1]
       ret.vagCarParams.vagCanModule.bus1.obd01 = 913 in fingerprint[1]
       ret.vagCarParams.vagCanModule.bus1.getriebe14 = 968 in fingerprint[1]
+      #ret.vagCarParams.vagCanModule.bus1.msg980 = 980 in fingerprint[1]
+      #ret.vagCarParams.vagCanModule.bus1.msg1022 = 1022 in fingerprint[1]
       ret.vagCarParams.vagCanModule.bus1.motor09 = 1607 in fingerprint[1]
+
       #===== Bus 2 (ext can from camera) =====
       #===== Bus 3 (should be dia can)
       #===== Bus 4 (info can) =====
+      #ret.vagCarParams.vagCanModule.bus4.msg986 = 986 in fingerprint[4]
+      #ret.vagCarParams.vagCanModule.bus4.msg1711 = 1711 in fingerprint[4]
+
       #===== Bus 5 (gb can) =====
       #===== Bus 6 (pt can) =====
 

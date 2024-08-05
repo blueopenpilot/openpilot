@@ -97,16 +97,23 @@ struct VagCarParams @0xf35cc4560bbf6ec2 {
     bus4 @4 :Bus4;
     bus5 @5 :Bus5;
     bus6 @6 :Bus6;
+    bus7 @7 :Bus7;
 
     #----- bus 0 -----
     struct Bus0 {
       vehicleSpeed @0 :Bool;
-      charisma01 @1: Bool;
-      charisma07 @2: Bool;
-      motor07 @3 :Bool;
-      bcm01 @4: Bool;
-      motor18 @5: Bool;
-      kombi02 @6: Bool;
+      blinkmodi02 @1: Bool;
+      msg896 @2: Bool;
+      msg898 @3: Bool;
+      charisma01 @4: Bool;
+      lichtAnf01 @5: Bool;
+      gateway72 @6: Bool;
+      charisma07 @7: Bool;
+      parkhilfe01 @8: Bool;
+      motor07 @9 :Bool;
+      bcm01 @10: Bool;
+      motor18 @11: Bool;
+      kombi02 @12: Bool;
     }
     #----- bus 1 -----
     struct Bus1 {
@@ -114,7 +121,9 @@ struct VagCarParams @0xf35cc4560bbf6ec2 {
       motor04 @1: Bool;
       obd01 @2: Bool;
       getriebe14 @3: Bool;
-      motor09 @4: Bool;
+      msg980 @4: Bool;
+      msg1022 @5: Bool;
+      motor09 @6: Bool;
     }
     #----- bus 2 -----
     struct Bus2 {
@@ -124,12 +133,17 @@ struct VagCarParams @0xf35cc4560bbf6ec2 {
     }
     #----- bus 4 -----
     struct Bus4 {
+      msg986 @0: Bool;
+      msg1711 @1: Bool;
     }
     #----- bus 5 -----
     struct Bus5 {
     }
     #----- bus 6 -----
     struct Bus6 {
+    }
+    #----- bus 7 -----
+    struct Bus7 {
     }
   }
 }

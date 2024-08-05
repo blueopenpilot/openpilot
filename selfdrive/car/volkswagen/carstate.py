@@ -160,26 +160,18 @@ class CarState(CarStateBase):
 
     ret.vagCarState.brakeLights = bool(pt_cp.vl["ESP_05"]["ESP_Status_Bremsdruck"])
 
-    #VAG
-    # ----- Motor_04 -----
-    if self.CP.vagCarParams.vagCanModule.bus1.motor04:
-      ret.vagCarState.vagUiField.moIstgang                  = body_cp.vl["Motor_04"]["MO_Istgang"]
-      ret.vagCarState.vagUiField.moLadedruck                = body_cp.vl["Motor_04"]["MO_Ladedruck"] #0~5.10 Bar
-      ret.vagCarState.vagUiField.moOeldruck                 = body_cp.vl["Motor_04"]["MO_Oeldruck"] #0~10.00 Bar
-    # ----- Motor_07 -----
-    if self.CP.vagCarParams.vagCanModule.bus0.motor07:
-      ret.vagCarState.vagUiField.moAnsaugluftTemp           = pt_cp.vl["Motor_07"]["MO_Ansaugluft_Temp"] #-48~141.75 DegreCelsi
-      ret.vagCarState.vagUiField.moKuehlmittelTemp          = pt_cp.vl["Motor_07"]["MO_Kuehlmittel_Temp"] #-48~141.75 DegreCelsi
-      ret.vagCarState.vagUiField.moOelTemp                  = pt_cp.vl["Motor_07"]["MO_Oel_Temp"] #-60~192 DegreCelsi
-    # ----- Motor_09 -----
-    if self.CP.vagCarParams.vagCanModule.bus1.motor09:
-      ret.vagCarState.vagUiField.moItmKuehlmittelTemp       = body_cp.vl["Motor_09"]["MO_ITM_Kuehlmittel_Temp"] #-45.75~143.25 DegreCelsi
-    # ----- Motor_18 -----
-    if self.CP.vagCarParams.vagCanModule.bus0.motor18:
-      ret.vagCarState.vagUiField.moMaxLadedruck             = pt_cp.vl["Motor_18"]["MO_max_Ladedruck"] #0~6.3 Bar
+    #VAG cereal
+    # ----- ACC_02 -----
+    ret.vagCarState.vagUiField.accAbstandsindex             = ext_cp.vl["ACC_02"]["ACC_Abstandsindex"]
+
+    # ----- Gateway_72 -----
+    ret.vagCarState.vagUiField.bcm1AussenTempUngef          = pt_cp.vl["Gateway_72"]["BCM1_Aussen_Temp_ungef"] #-50~76.0 DegreCelsi
     # ----- Motor_20 -----
     ret.vagCarState.vagUiField.moRelSaugrohrdruck           = pt_cp.vl["Motor_20"]["MO_rel_Saugrohrdruck"] #0~1.116 Bar
     ret.vagCarState.vagUiField.moRelSaugrohrdruckGemErr     = pt_cp.vl["Motor_20"]["MO_rel_Saugrohrdruck_gem_err"]
+    # ----- ESP_05 -----
+    ret.vagCarState.vagUiField.espBremsdruck                = pt_cp.vl["ESP_05"]["ESP_Bremsdruck"] #-30~276.6 Bar
+    ret.vagCarState.vagUiField.espBvkUnterdruck             = pt_cp.vl["ESP_05"]["ESP_BKV_Unterdruck"] #0~1.012 Bar
     # ----- Getriebe_11 -----
     #Pon: For panda jungle develop
     if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
@@ -187,22 +179,38 @@ class CarState(CarStateBase):
         ret.vagCarState.vagUiField.geZielgang                 = pt_cp.vl["Getriebe_11"]["GE_Zielgang"]
       except Exception:
         print("[BOP][carstate.py] exception to set vagCarState.vagUiField.geZielgang")
-    # ----- Getriebe_14 -----
-    if self.CP.vagCarParams.vagCanModule.bus1.getriebe14:
-      ret.vagCarState.vagUiField.geSumpftemperatur          = body_cp.vl["Getriebe_14"]["GE_Sumpftemperatur"] #-58~196 DegreCelsi
-    # ----- ESP_05 -----
-    ret.vagCarState.vagUiField.espBremsdruck                = pt_cp.vl["ESP_05"]["ESP_Bremsdruck"] #-30~276.6 Bar
-    ret.vagCarState.vagUiField.espBvkUnterdruck             = pt_cp.vl["ESP_05"]["ESP_BKV_Unterdruck"] #0~1.012 Bar
-    # ----- Gateway_72 -----
-    ret.vagCarState.vagUiField.bcm1AussenTempUngef          = pt_cp.vl["Gateway_72"]["BCM1_Aussen_Temp_ungef"] #-50~76.0 DegreCelsi
-    # ----- OBD_01 -----
-    if self.CP.vagCarParams.vagCanModule.bus1.obd01:
-      ret.vagCarState.vagUiField.obdEngCoolTemp             = body_cp.vl["OBD_01"]["OBD_Eng_Cool_Temp"] #-40~215 DegreCelsi
+
+    # ===== bus 0 =====
     # ----- Kombi_02 -----
     if self.CP.vagCarParams.vagCanModule.bus0.kombi02:
       ret.vagCarState.vagUiField.kbiAussenTempGef           = pt_cp.vl["Kombi_02"]["KBI_Aussen_Temp_gef"] #-50~75.0 DegreCelsi
-    # ----- ACC_02 -----
-    ret.vagCarState.vagUiField.accAbstandsindex             = ext_cp.vl["ACC_02"]["ACC_Abstandsindex"]
+    # ----- Motor_07 -----
+    if self.CP.vagCarParams.vagCanModule.bus0.motor07:
+      ret.vagCarState.vagUiField.moAnsaugluftTemp           = pt_cp.vl["Motor_07"]["MO_Ansaugluft_Temp"] #-48~141.75 DegreCelsi
+      ret.vagCarState.vagUiField.moKuehlmittelTemp          = pt_cp.vl["Motor_07"]["MO_Kuehlmittel_Temp"] #-48~141.75 DegreCelsi
+      ret.vagCarState.vagUiField.moOelTemp                  = pt_cp.vl["Motor_07"]["MO_Oel_Temp"] #-60~192 DegreCelsi
+    # ----- Motor_18 -----
+    if self.CP.vagCarParams.vagCanModule.bus0.motor18:
+      ret.vagCarState.vagUiField.moMaxLadedruck             = pt_cp.vl["Motor_18"]["MO_max_Ladedruck"] #0~6.3 Bar
+
+    # ===== bus 1 =====
+    # ----- Motor_04 -----
+    if self.CP.vagCarParams.vagCanModule.bus1.motor04:
+      ret.vagCarState.vagUiField.moIstgang                  = body_cp.vl["Motor_04"]["MO_Istgang"]
+      ret.vagCarState.vagUiField.moLadedruck                = body_cp.vl["Motor_04"]["MO_Ladedruck"] #0~5.10 Bar
+      ret.vagCarState.vagUiField.moOeldruck                 = body_cp.vl["Motor_04"]["MO_Oeldruck"] #0~10.00 Bar
+    # ----- Motor_09 -----
+    if self.CP.vagCarParams.vagCanModule.bus1.motor09:
+      ret.vagCarState.vagUiField.moItmKuehlmittelTemp       = body_cp.vl["Motor_09"]["MO_ITM_Kuehlmittel_Temp"] #-45.75~143.25 DegreCelsi
+    # ----- Getriebe_14 -----
+    if self.CP.vagCarParams.vagCanModule.bus1.getriebe14:
+      ret.vagCarState.vagUiField.geSumpftemperatur          = body_cp.vl["Getriebe_14"]["GE_Sumpftemperatur"] #-58~196 DegreCelsi
+    # ----- OBD_01 -----
+    if self.CP.vagCarParams.vagCanModule.bus1.obd01:
+      ret.vagCarState.vagUiField.obdEngCoolTemp             = body_cp.vl["OBD_01"]["OBD_Eng_Cool_Temp"] #-40~215 DegreCelsi
+    # ----- Motor_12 -----
+    if self.CP.vagCarParams.vagCanModule.bus1.motor12:
+      ret.engineRpm                             = body_cp.vl["Motor_12"]["MO_Drehzahl_01"]
     # ----- VehicleSpeed -----
     #Pon: For panda jungle develop
     if not self.sm['vagParam'].vagParamGeneral.isVagPandaJungleEnabled:
@@ -212,17 +220,12 @@ class CarState(CarStateBase):
         except Exception:
           print("[BOP][carstate.py] exception to set vagCarState.vagUiField.speed")
 
-    # ----- Motor_12 -----
-    if self.CP.vagCarParams.vagCanModule.bus1.motor12:
-      ret.engineRpm                             = body_cp.vl["Motor_12"]["MO_Drehzahl_01"]
-
-    ##### VAG Force disable startstop #####
+    #VAG
+    # ===== bus 0 =====
     if self.CP.vagCarParams.vagCanModule.bus0.bcm01:
       self.bcm_01 = pt_cp.vl["BCM_01"]
     if self.CP.vagCarParams.vagCanModule.bus0.motor18:
       self.motor_18 = pt_cp.vl["Motor_18"]
-
-    ##### VAG Driving mode #####
     if self.CP.vagCarParams.vagCanModule.bus0.charisma01:
       self.charisma_01 = pt_cp.vl["Charisma_01"]
     if self.CP.vagCarParams.vagCanModule.bus0.charisma07:
@@ -426,21 +429,30 @@ class CarState(CarStateBase):
         messages += MqbExtraSignals.bsm_radar_messages
 
     #VAG
-    #if CP.carFingerprint in (CAR.SKODA_KODIAQ_MK1):
-    if CP.vagCarParams.vagCanModule.bus0.motor07:
-      messages += MqbExtraSignals.motor_07_message
+    # ----- bus 0 -----
     if CP.vagCarParams.vagCanModule.bus0.vehicleSpeed:
       messages += MqbExtraSignals.vehicle_speed_message
-    if CP.vagCarParams.vagCanModule.bus0.bcm01:
-      messages += MqbExtraSignals.bcm_01_message
-    if CP.vagCarParams.vagCanModule.bus0.kombi02:
-      messages += MqbExtraSignals.kombi_02_message
-    if CP.vagCarParams.vagCanModule.bus0.motor18:
-      messages += MqbExtraSignals.motor_18_message
+    if CP.vagCarParams.vagCanModule.bus0.msg896:
+      messages += MqbExtraSignals.msg_896_message
+    if CP.vagCarParams.vagCanModule.bus0.msg898:
+      messages += MqbExtraSignals.msg_898_message
     if CP.vagCarParams.vagCanModule.bus0.charisma01:
       messages += MqbExtraSignals.charisma_01_message
+    if CP.vagCarParams.vagCanModule.bus0.lichtAnf01:
+      messages += MqbExtraSignals.licht_anf_01_message
     if CP.vagCarParams.vagCanModule.bus0.charisma07:
       messages += MqbExtraSignals.charisma_07_message
+    if CP.vagCarParams.vagCanModule.bus0.parkhilfe01:
+      messages += MqbExtraSignals.parkhilfe_01_message
+    if CP.vagCarParams.vagCanModule.bus0.motor07:
+      messages += MqbExtraSignals.motor_07_message
+    if CP.vagCarParams.vagCanModule.bus0.bcm01:
+      messages += MqbExtraSignals.bcm_01_message
+    if CP.vagCarParams.vagCanModule.bus0.motor18:
+      messages += MqbExtraSignals.motor_18_message
+    if CP.vagCarParams.vagCanModule.bus0.kombi02:
+      messages += MqbExtraSignals.kombi_02_message
+
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.pt)
 
   @staticmethod
@@ -466,6 +478,7 @@ class CarState(CarStateBase):
       if CP.enableBsm:
         messages += MqbExtraSignals.bsm_radar_messages
 
+    # ----- bus 2 -----
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.cam)
 
   @staticmethod
@@ -474,17 +487,21 @@ class CarState(CarStateBase):
       # sig_address, frequency
     ]
     #VAG
-    #if CP.carFingerprint in (CAR.SKODA_KODIAQ_MK1):
-    if CP.vagCarParams.vagCanModule.bus1.getriebe14:
-      messages += MqbExtraSignals.getriebe_14_message
+    # ----- bus 1 -----
     if CP.vagCarParams.vagCanModule.bus1.motor12:
       messages += MqbExtraSignals.motor_12_message
-    if CP.vagCarParams.vagCanModule.bus1.motor09:
-      messages += MqbExtraSignals.motor_09_message
-    if CP.vagCarParams.vagCanModule.bus1.obd01:
-      messages += MqbExtraSignals.obd_01_message
     if CP.vagCarParams.vagCanModule.bus1.motor04:
       messages += MqbExtraSignals.motor_04_message
+    if CP.vagCarParams.vagCanModule.bus1.obd01:
+      messages += MqbExtraSignals.obd_01_message
+    if CP.vagCarParams.vagCanModule.bus1.getriebe14:
+      messages += MqbExtraSignals.getriebe_14_message
+    if CP.vagCarParams.vagCanModule.bus1.msg980:
+      messages += MqbExtraSignals.msg_980_message
+    if CP.vagCarParams.vagCanModule.bus1.msg1022:
+      messages += MqbExtraSignals.msg_1022_message
+    if CP.vagCarParams.vagCanModule.bus1.motor09:
+      messages += MqbExtraSignals.motor_09_message
 
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.body)
 
@@ -493,6 +510,12 @@ class CarState(CarStateBase):
     messages = [
       # sig_address, frequency
     ]
+    # ----- bus 4 -----
+    if CP.vagCarParams.vagCanModule.bus4.msg986:
+      messages += MqbExtraSignals.msg_986_message
+    if CP.vagCarParams.vagCanModule.bus4.msg1711:
+      messages += MqbExtraSignals.msg_1711_message
+
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.vag_info)
 
   @staticmethod
@@ -500,6 +523,7 @@ class CarState(CarStateBase):
     messages = [
       # sig_address, frequency
     ]
+    # ----- bus 5 -----
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.vag_gb)
 
   @staticmethod
@@ -507,6 +531,7 @@ class CarState(CarStateBase):
     messages = [
       # sig_address, frequency
     ]
+    # ----- bus 6 -----
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, CANBUS.vag_pt)
 
   @staticmethod
@@ -571,55 +596,108 @@ class MqbExtraSignals:
   bsm_radar_messages = [
     ("SWA_01", 20),                              # From J1086 Lane Change Assist
   ]
+
   #VAG
-  motor_07_message = [
-    ("Motor_07", 2),
-  ]
-  vehicle_speed_message = [
+  #----- bus 0 -----
+  vehicle_speed_message = [ #286
     ("VehicleSpeed", 50),
   ]
-  bcm_01_message = [
-    ("BCM_01", 1),
-  ]
-  kombi_02_message = [
-    ("Kombi_02", 1),
-  ]
-  motor_18_message = [
-    ("Motor_18", 1),
-  ]
-  charisma_01_message = [
-    ("Charisma_01", 1),
-  ]
-  charisma_07_message = [
-    ("Charisma_07", 1),
-  ]
-  getriebe_14_message = [
-    ("Getriebe_14", 10),
-  ]
-  motor_12_message = [
-    ("Motor_12", 100),
-  ]
-  motor_09_message = [
-    ("Motor_09", 1),
-  ]
-  obd_01_message = [
-    ("OBD_01", 1),
-  ]
-  motor_04_message = [
-    ("Motor_04", 1),
-  ]
-  blinkmodi_02_message = [
+  blinkmodi_02_message = [ #870
     ("Blinkmodi_02", 5),
   ]
-  parkhilfe_01_message = [
-    ("Parkhilfe_01", 10),
+  msg_896_message = [ #896
+    ("MSG_896_0x380_APS_Master", 12),
   ]
-  licht_anf_01_message = [
+  msg_898_message = [ #898
+    ("MSG_898_0x382_APS_02", 12),
+  ]
+  charisma_01_message = [ #901
+    ("Charisma_01", 1),
+  ]
+  licht_anf_01_message = [ #981
     ("Licht_Anf_01", 10),
   ]
-  gateway_72_message = [
+  gateway_72_message = [ #987
     ("Gateway_72", 10),
   ]
+  charisma_07_message = [ #1000
+    ("Charisma_07", 1),
+  ]
+  parkhilfe_01_message = [ #1175
+    ("Parkhilfe_01", 10),
+  ]
+  motor_07_message = [ #1600
+    ("Motor_07", 2),
+  ]
+  bcm_01_message = [ #1626
+    ("BCM_01", 1),
+  ]
+  motor_18_message = [ #1648
+    ("Motor_18", 1),
+  ]
+  kombi_02_message = [ #1719
+    ("Kombi_02", 1),
+  ]
+  #----- bus 1 -----
+  motor_12_message = [ #168
+    ("Motor_12", 100),
+  ]
+  motor_04_message = [ #263
+    ("Motor_04", 1),
+  ]
+  obd_01_message = [ #913
+    ("OBD_01", 1),
+  ]
+  getriebe_14_message = [ #968
+    ("Getriebe_14", 10),
+  ]
+  msg_980_message = [ #980
+    ("MSG_980_0x3d4", 100),
+  ]
+  msg_1022_message = [ #1022
+    ("MSG_1022_0x3fe", 1),
+  ]
+  motor_09_message = [ #1607
+    ("Motor_09", 1),
+  ]
+  #----- bus 2 -----
+  #----- bus 3 -----
+  #----- bus 4 -----
+  msg_986_message = [ #986
+    ("MSG_986_0x3da", 1),
+  ]
+  msg_1711_message = [ #1711
+    ("MSG_1711_0x6af", 1),
+  ]
+  #----- bus 5 -----
+  #----- bus 6 -----
+  #----- bus 7 -----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class PqExtraSignals:
   # Additional signal and message lists for optional or bus-portable controllers

@@ -1,26 +1,45 @@
 #include "safety_volkswagen_common.h"
 
-#define MSG_ESP_19                  0x0B2   // RX from ABS, for wheel speeds
-#define MSG_LH_EPS_03               0x09F   // RX from EPS, for driver steering torque
-#define MSG_ESP_05                  0x106   // RX from ABS, for brake switch state
-#define MSG_TSK_06                  0x120   // RX from ECU, for ACC status from drivetrain coordinator
-#define MSG_MOTOR_20                0x121   // RX from ECU, for driver throttle input
-#define MSG_ACC_06                  0x122   // TX by OP, ACC control instructions to the drivetrain coordinator
-#define MSG_HCA_01                  0x126   // TX by OP, Heading Control Assist steering torque
-#define MSG_GRA_ACC_01              0x12B   // TX by OP, ACC control buttons for cancel/resume
-#define MSG_ACC_07                  0x12E   // TX by OP, ACC control instructions to the drivetrain coordinator
-#define MSG_ACC_02                  0x30C   // TX by OP, ACC HUD data to the instrument cluster
-#define MSG_MOTOR_14                0x3BE   // RX from ECU, for brake switch status
-#define MSG_LDW_02                  0x397   // TX by OP, Lane line recognition and text alerts
-#define MSG_BLINKMODI_02            870
-#define MSG_CHARISMA_01             901
-#define MSG_LICHT_ANF_01            981
-#define MSG_GATEWAY_72              987
-#define MSG_PARKHILFE_01            1175
-#define MSG_BCM_01                  1626
+#define MSG_ESP_19                    178     //0x0B2   // RX from ABS, for wheel speeds
+#define MSG_LH_EPS_03                 159     //0x09F   // RX from EPS, for driver steering torque
+#define MSG_ESP_05                    262     //0x106   // RX from ABS, for brake switch state
+#define MSG_TSK_06                    288     //0x120   // RX from ECU, for ACC status from drivetrain coordinator
+#define MSG_MOTOR_20                  289     //0x121   // RX from ECU, for driver throttle input
+#define MSG_ACC_06                    290     //0x122   // TX by OP, ACC control instructions to the drivetrain coordinator
+#define MSG_HCA_01                    294     //0x126   // TX by OP, Heading Control Assist steering torque
+#define MSG_GRA_ACC_01                299     //0x12B   // TX by OP, ACC control buttons for cancel/resume
+#define MSG_ACC_07                    302     //0x12E   // TX by OP, ACC control instructions to the drivetrain coordinator
+#define MSG_ACC_02                    780     //0x30C   // TX by OP, ACC HUD data to the instrument cluster
+#define MSG_LDW_02                    919     //0x397   // TX by OP, Lane line recognition and text alerts
+#define MSG_MOTOR_14                  958     //0x3BE   // RX from ECU, for brake switch status
+
+#define MSG_BLINKMODI_02              870     //0x32A   //Blinker
+#define MSG_896_0x380_APS_Master      896     //0x380   //Area view
+#define MSG_898_0x382_APS_02          898     //0x382   //Area view
+#define MSG_CHARISMA_01               901     //0x385   //Driving mode
+#define MSG_980_0x3d4                 980     //0x3D4   //Bliner
+#define MSG_LICHT_ANF_01              981     //0x3D5   //Blinker
+#define MSG_986_0x3da                 986     //0x3DA   //Area view
+#define MSG_GATEWAY_72                987     //0x3DB   //Blinker
+#define MSG_CHARISMA_07               1000    //0x3E8   //Driving mode
+#define MSG_1022_0x3fe                1022    //0x3FE   //Driving mode
+#define MSG_PARKHILFE_01              1175    //0x497   //Area view
+#define MSG_BCM_01                    1626    //0x65A   //Blinker
+#define MSG_1711_0x6af                1711    //0x6AF   //Area view
 
 // Transmit of GRA_ACC_01 is allowed on bus 0 and 2 to keep compatibility with gateway and camera integration
 const CanMsg VOLKSWAGEN_MQB_PANDA2_TX_MSGS[] = {
+                                                //Blinker
+                                                {MSG_BLINKMODI_02, 4, 8}, {MSG_BLINKMODI_02, 5, 8}, {MSG_BLINKMODI_02, 6, 8},
+                                                {MSG_LICHT_ANF_01, 4, 8},
+                                                {MSG_GATEWAY_72, 4, 8}, {MSG_GATEWAY_72, 5, 8}, {MSG_GATEWAY_72, 6, 8},
+                                                {MSG_980_0x3d4, 6, 8},
+                                                //Area view
+                                                {MSG_PARKHILFE_01, 4, 8}, {MSG_PARKHILFE_01, 5, 8},
+                                                {MSG_896_0x380_APS_Master, 5, 8},
+                                                {MSG_898_0x382_APS_02, 5, 8},
+                                                {MSG_986_0x3da, 4, 8},
+                                                {MSG_1711_0x6af, 4, 8}, {MSG_1711_0x6af, 5, 8},
                                                 };
 
 

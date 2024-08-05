@@ -257,6 +257,16 @@ BO_ 1000 Charisma_07: 8 Vector__XXX
  SG_ CHA_Ziel_FahrPr_FCWO : 56|4@1+ (1,0) [0|15] "" Vector__XXX
  SG_ CHA_Ziel_FahrPr_FCWP : 60|4@1+ (1,0) [0|15] "" Vector__XXX
 
+BO_ 1022 MSG_1022_0x3fe: 8 DRIVING_MODE
+ SG_ SIGNAL_1 : 0|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_2 : 8|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_3 : 16|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_4 : 24|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_5 : 32|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_6 : 40|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_7 : 48|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8 : 56|8@1+ (1,0) [0|255] "" PONTEST
+
 BO_ 945 DC_Hybrid_01: 8 LEH_MQB
  SG_ DC_HYB_iAktLV : 12|10@1+ (1,-511) [-511|510] "Unit_Amper" Gateway_MQB
  SG_ DC_HYB_iAktReserveLV : 22|10@1+ (1,-511) [-511|510] "Unit_Amper" Gateway_MQB
@@ -1418,6 +1428,60 @@ BO_ 997 TSG_FT_02: 8 XXX
  SG_ TSG_FT_02_BZ : 8|4@1+ (1,0) [0|15] "" XXX
  SG_ TSG_FT_02_CRC : 0|8@1+ (1,0) [0|255] "" XXX
 
+BO_ 896 MSG_896_0x380_APS_Master: 8 AREA_VIEW
+ SG_ SIGNAL_1 : 0|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_2 : 8|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_3 : 16|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_4 : 24|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_5 : 32|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_6 : 40|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_7 : 48|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8 : 56|8@1+ (1,0) [0|255] "" PONTEST
+
+BO_ 898 MSG_898_0x382_APS_02: 8 AREA_VIEW
+ SG_ SIGNAL_1 : 0|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_2 : 8|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_3 : 16|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_4 : 24|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_5 : 32|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_6 : 40|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_7 : 48|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8 : 56|8@1+ (1,0) [0|255] "" PONTEST
+
+BO_ 986 MSG_986_0x3da: 8 AREA_VIEW
+ SG_ SIGNAL_1 : 0|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_2 : 8|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_3 : 16|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_4 : 24|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_5 : 32|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_6 : 40|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_7 : 48|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8_1 : 56|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8_2 : 57|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8_3 : 58|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8_4 : 59|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8_5 : 60|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8_6 : 61|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8_7 : 62|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8_8 : 63|1@1+ (1,0) [0|255] "" PONTEST
+
+BO_ 1711 MSG_1711_0x6af: 8 AREA_VIEW
+ SG_ SIGNAL_1_1 : 0|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_2 : 1|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_3 : 2|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_4 : 3|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_5 : 4|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_6 : 5|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_7 : 6|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_8 : 7|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_2 : 8|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_3 : 16|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_4 : 24|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_5 : 32|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_6 : 40|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_7 : 48|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8 : 56|8@1+ (1,0) [0|255] "" PONTEST
+
 BO_ 1175 Parkhilfe_01: 8 XXX
  SG_ PH_Visualisierung : 0|3@1+ (1,0) [0|7] "" Vector__XXX
  SG_ PDC_Tonausgabe_Front : 4|4@1+ (1,0) [0|15] "" Vector__XXX
@@ -1498,6 +1562,30 @@ BO_ 981 Licht_Anf_01: 8 Vector__XXX
  SG_ BCM1_Allwetterlicht_Anf : 41|1@1+ (1,0) [0|1] ""  Frontsensorik
 
 BO_ 1440 RLS_01: 8 XXX
+
+BO_ 980 MSG_980_0x3d4: 8 BLINKER
+ SG_ SIGNAL_1_1 : 0|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_2 : 1|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_3 : 2|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_4 : 3|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_5 : 4|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_6 : 5|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_7 : 6|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_1_8 : 7|1@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_2_1 : 8|1@0+ (1,0) [0|1] "" PONTEST
+ SG_ SIGNAL_2_2 : 9|1@0+ (1,0) [0|1] "" PONTEST
+ SG_ SIGNAL_2_3 : 10|1@0+ (1,0) [0|1] "" PONTEST
+ SG_ SIGNAL_2_4 : 11|1@0+ (1,0) [0|1] "" PONTEST
+ SG_ LeftBlinker : 12|1@0+ (1,0) [0|1] "" PONTEST
+ SG_ RightBlinker : 13|1@0+ (1,0) [0|1] "" PONTEST
+ SG_ SIGNAL_2_7 : 14|1@0+ (1,0) [0|1] "" PONTEST
+ SG_ SIGNAL_2_8 : 15|1@0+ (1,0) [0|1] "" PONTEST
+ SG_ SIGNAL_3 : 16|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_4 : 24|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_5 : 32|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_6 : 40|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_7 : 48|8@1+ (1,0) [0|255] "" PONTEST
+ SG_ SIGNAL_8 : 56|8@1+ (1,0) [0|255] "" PONTEST
 
 BO_ 870 Blinkmodi_02: 8 XXX
  SG_ Hazard_Switch : 20|1@1+ (1,0) [0|1] ""  XXX
